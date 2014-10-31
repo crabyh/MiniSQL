@@ -24,6 +24,12 @@ bool BufferBlock::initialize()
     return true;
 }
 
+BufferManager::BufferManager()
+{
+    for(int i=0;i<MAXBUFFERNUM;i++)
+        buffer[i]=*new BufferBlock;
+}
+
 BufferManager::~BufferManager()
 {
     for(int i=0;i<MAXBUFFERNUM;i++)
@@ -60,26 +66,34 @@ bool BufferManager::readDataToBuffer(string fileName, int bufferNum, int blockNu
 {
     buffer[bufferNum].fileName = fileName;
     buffer[bufferNum].blockNum = blockNum;
-    fstream  fin(fileName.c_str(), ios::in);
-    fin.seekp(BLOCKSIZE * blockNum, fin.beg); //读出含有目的数据内容的块（目的数据在中间）
-    fin.read(buffer[bufferNum].values, BLOCKSIZE);//向buffer的block中读入4096B
-    fin.close();
+    fstream in;
+    in.open(fileName.data(),ios::in|ios::binary);
+    if(!in.is_open())
+    {
+        cout<<"Can not find the file !"<<endl;
+    }
+    in.seekp(blockNum*BLOCKSIZE, in.beg);
+    in.read(buffer[bufferNum].values, BLOCKSIZE);
+    in.close();
     return true;
 }
 
 bool BufferManager::flashBufferToFile(int bufferNum)
 {
     if(buffer[bufferNum].isWritten == false) return true;//是否被修改过。true就重新写回文件，false不用管它
-    string fileName = buffer[bufferNum].fileName;
-    FILE *fp;
-    fp = fopen(fileName.c_str(), "rb+");
-    //fopen_s(&fp, fileName.c_str(), "rb+");
-
-    fseek(fp, buffer[bufferNum].blockNum * BLOCKSIZE, 0);
-    fwrite(buffer[bufferNum].values, BLOCKSIZE, 1, fp);
+    string filename = buffer[bufferNum].fileName ;
+    fstream out;
+    out.open(filename.data(),ios::out|ios::in|ios::binary);
+    if(!out.is_open())
+    {
+        out.open(filename.data(),ios::app);
+        out.close();
+        out.open(filename.data(),ios::out|ios::in|ios::binary);
+    }
+    out.seekp(buffer[bufferNum].blockNum*BLOCKSIZE, out.beg);
+    out.write(buffer[bufferNum].values , BLOCKSIZE);
     buffer[bufferNum].initialize();
-    flashLRU(bufferNum);//一次替换完毕，更新所有块的LRU
-    fclose(fp);
+    out.close();
     return true;
 }
 
@@ -138,7 +152,10 @@ char* BufferManager::writeData(string fileName, int addr)
     return buffer[blockNumInBuffer].values+blockOffset/sizeof(char);//返回数据地址
 }
 
-
-
+/*int main(int argc, const char * argv[]) {
+    BufferManager m;
+    *m.writeData("abc", 0x00000000)='H';
+    printf( "%s" , m.readData("abc", 0x00000000));
+}*/
 
 

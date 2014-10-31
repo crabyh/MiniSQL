@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>C5026195-9299-4479-B948-B2E5AB267033</string>
+	<key>IDESourceControlProjectName</key>
+	<string>MiniSQL</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>48038029BF05710653F87D3723C9D47C0C70B5D4</key>
+		<string>https://github.com/crabyh/MiniSQL.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>MiniSQL.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>48038029BF05710653F87D3723C9D47C0C70B5D4</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/crabyh/MiniSQL.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>48038029BF05710653F87D3723C9D47C0C70B5D4</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>48038029BF05710653F87D3723C9D47C0C70B5D4</string>
+			<key>IDESourceControlWCCName</key>
+			<string>MiniSQL</string>
+		</dict>
+	</array>
+</dict>
+</plist>

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		132CEF5F1A03751400583B3C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 132CEF5E1A03751400583B3C /* main.cpp */; };
 		132CEF671A03753600583B3C /* BufferManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 132CEF651A03753600583B3C /* BufferManager.cpp */; };
 /* End PBXBuildFile section */
 
@@ -25,7 +24,6 @@
 
 /* Begin PBXFileReference section */
 		132CEF5B1A03751400583B3C /* MiniSQL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MiniSQL; sourceTree = BUILT_PRODUCTS_DIR; };
-		132CEF5E1A03751400583B3C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		132CEF651A03753600583B3C /* BufferManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BufferManager.cpp; sourceTree = "<group>"; };
 		132CEF661A03753600583B3C /* BufferManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BufferManager.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -60,7 +58,6 @@
 		132CEF5D1A03751400583B3C /* MiniSQL */ = {
 			isa = PBXGroup;
 			children = (
-				132CEF5E1A03751400583B3C /* main.cpp */,
 				132CEF651A03753600583B3C /* BufferManager.cpp */,
 				132CEF661A03753600583B3C /* BufferManager.h */,
 			);
@@ -123,7 +120,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				132CEF5F1A03751400583B3C /* main.cpp in Sources */,
 				132CEF671A03753600583B3C /* BufferManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
