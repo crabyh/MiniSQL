@@ -9,6 +9,19 @@
 #ifndef __MiniSQL__CatalogManager__
 #define __MiniSQL__CatalogManager__
 
-#include <stdio.h>
+#include "PublicClass.h"
+#include <fstream>
+
+class CatalogManager
+{
+    vector<Table> Vtable;
+    vector<Index> Vindex;
+    int tableNum;
+    int IndexNum;
+    
+public:
+    CatalogManager();
+    ~CatalogManager();
+};
 
 #endif /* defined(__MiniSQL__CatalogManager__) */

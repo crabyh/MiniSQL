@@ -14,6 +14,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <math.h>
 using namespace std;
 
 class BufferManager;
@@ -49,8 +50,8 @@ class BufferManager{
 public:
     BufferManager();
     ~BufferManager();
-    char* readData(string fileName, long addr);
-    char* writeData(string fileName, long addr);
+    char* readData(string fileName, char* addr);
+    bool writeData(string fileName, long addr, void* dataAddr, int recordSize, int recordNum);
 
     
 };

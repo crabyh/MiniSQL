@@ -123,10 +123,10 @@ int BufferManager::ifInBuffer(string fileName,int blockNum)
 }
 
 //供外部调用读取块
-char* BufferManager::readData(string fileName, long addr)
+char* BufferManager::readData(string fileName, char* addr)
 {
-    int blockNum = (int) addr / BLOCKSIZE; //数据存在于file的第 blockNum+1 块内，从blockNum末尾开始读取
-    int blockOffset = addr % BLOCKSIZE; //所需数据在块内的偏移量
+    int blockNum = (int) ((long)addr / BLOCKSIZE); //数据存在于file的第 blockNum+1 块内，从blockNum末尾开始读取
+    int blockOffset = (long)addr % BLOCKSIZE; //所需数据在块内的偏移量
     int blockNumInBuffer=ifInBuffer(fileName, blockNum);//block在buffer中的位置
     
     if(blockNumInBuffer != -1)//已经存在于buffer中
@@ -142,29 +142,44 @@ char* BufferManager::readData(string fileName, long addr)
 }
 
 //供外部调用写入块
-char* BufferManager::writeData(string fileName, long addr)
+bool BufferManager::writeData(string fileName, long addr, void* dataAddr, int recordSize, int recordNum)
 {
-    int blockNum = (int) addr / BLOCKSIZE; //数据存在于file的第 blockNum+1 块内，从blockNum末尾开始读取
-    int blockOffset = addr % BLOCKSIZE; //所需数据在块内的偏移量
-    int blockNumInBuffer=ifInBuffer(fileName, blockNum);//block在buffer中的位置
+    int blockNum = (int) ((long)addr / BLOCKSIZE); //数据存在于file的第 blockNum+1 块内，从blockNum末尾开始读取
+    int blockOffset = (long)addr % BLOCKSIZE; //所需数据在块内的偏移量
     
-    if(blockNumInBuffer != -1)//已经存在于buffer中
+    while(recordNum>0)//还有数据没写入Buffer,一块一块写到buffer里
     {
-        flashLRU(blockNumInBuffer);//// 更新所有buffer block的LRU值
+        int recordToWrite=min(recordNum,(BLOCKSIZE-blockOffset)/recordSize);//当前块能插多少插多少
+        recordNum -=recordToWrite;
+        int size = recordToWrite * recordSize;
+        blockOffset=0;
+        
+        int blockNumInBuffer=ifInBuffer(fileName, blockNum);//block在buffer中的位置
+        
+        if(blockNumInBuffer != -1)//已经存在于buffer中
+        {
+            flashLRU(blockNumInBuffer);//// 更新所有buffer block的LRU值
+        }
+        else //需要的内容不在buffer中
+        {
+            blockNumInBuffer=getBufferToReplace();
+            readDataToBuffer(fileName, blockNumInBuffer, blockNum);//将文件块读到buffer[blockNumInBuffer]
+        }
+        buffer[blockNumInBuffer].isWritten = true;
+        char* addrInBuffer = buffer[blockNumInBuffer].values+blockOffset/sizeof(char);//Buffer中数据地址
+        memcpy(addrInBuffer, dataAddr, size/8);
+        addr = (addr/BLOCKSIZE+1)*BLOCKSIZE;
+        dataAddr = (void*)((long)dataAddr+size);
+        blockNum++;
     }
-    else //需要的内容不在buffer中
-    {
-        blockNumInBuffer=getBufferToReplace();
-        readDataToBuffer(fileName, blockNumInBuffer, blockNum);//将文件块读到buffer[blockNumInBuffer]
-    }
-    buffer[blockNumInBuffer].isWritten = true;
-    return buffer[blockNumInBuffer].values+blockOffset/sizeof(char);//返回数据地址
+    return true;
 }
 
-/*int main(int argc, const char * argv[]) {
+int main(int argc, const char * argv[]) {
     BufferManager m;
-    *m.writeData("abc", 0x00000000)='H';
+    char ch[2200]="HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld";
+    m.writeData("abc",0x00000000, ch, 88, 47);
     printf( "%s" , m.readData("abc", 0x00000000));
-}*/
+}
 
 
