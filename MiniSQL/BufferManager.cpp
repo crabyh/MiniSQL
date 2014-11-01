@@ -24,19 +24,22 @@ bool BufferBlock::initialize()
     return true;
 }
 
+//初始化BufferManager
 BufferManager::BufferManager()
 {
     for(int i=0;i<MAXBUFFERNUM;i++)
         buffer[i]=*new BufferBlock;
 }
 
+//析构函数，将数据全部存入文件
 BufferManager::~BufferManager()
 {
     for(int i=0;i<MAXBUFFERNUM;i++)
         flashBufferToFile(i);
 };
 
-int BufferManager::getBufferToReplace()//找到buffer数组中,需要被替换的buffer并初始化&flashToFile
+//找到buffer数组中,需要被替换的buffer并初始化&flashToFile
+int BufferManager::getBufferToReplace()
 {
     for(int bufferNum = 0; bufferNum < MAXBUFFERNUM; bufferNum++)    //先找空的buffer块
         if(buffer[bufferNum].isValid == false)
@@ -62,6 +65,7 @@ int BufferManager::getBufferToReplace()//找到buffer数组中,需要被替换�
     return bufferNum;
 }
 
+//从文件中读取数据存到Buffer中
 bool BufferManager::readDataToBuffer(string fileName, int bufferNum, int blockNum)
 {
     buffer[bufferNum].fileName = fileName;
@@ -78,6 +82,7 @@ bool BufferManager::readDataToBuffer(string fileName, int bufferNum, int blockNu
     return true;
 }
 
+//把Buffer中的缓存写入文件并初始化Buffer块
 bool BufferManager::flashBufferToFile(int bufferNum)
 {
     if(buffer[bufferNum].isWritten == false) return true;//是否被修改过。true就重新写回文件，false不用管它
@@ -97,6 +102,7 @@ bool BufferManager::flashBufferToFile(int bufferNum)
     return true;
 }
 
+//刷新LRU
 bool BufferManager::flashLRU(int bufferNum)
 {
     for(int i = 0; i < MAXBUFFERNUM; i++)
@@ -108,6 +114,7 @@ bool BufferManager::flashLRU(int bufferNum)
     return true;
 }
 
+//判断块是不是在Buffer中
 int BufferManager::ifInBuffer(string fileName,int blockNum)
 {
     for(int i = 0; i < MAXBUFFERNUM; i++)
@@ -115,9 +122,10 @@ int BufferManager::ifInBuffer(string fileName,int blockNum)
     return -1;
 }
 
-char* BufferManager::readData(string fileName, int addr)
+//供外部调用读取块
+char* BufferManager::readData(string fileName, long addr)
 {
-    int blockNum = addr / BLOCKSIZE; //数据存在于file的第 blockNum+1 块内，从blockNum末尾开始读取
+    int blockNum = (int) addr / BLOCKSIZE; //数据存在于file的第 blockNum+1 块内，从blockNum末尾开始读取
     int blockOffset = addr % BLOCKSIZE; //所需数据在块内的偏移量
     int blockNumInBuffer=ifInBuffer(fileName, blockNum);//block在buffer中的位置
     
@@ -133,9 +141,10 @@ char* BufferManager::readData(string fileName, int addr)
     return buffer[blockNumInBuffer].values+blockOffset/sizeof(char);//返回数据地址
 }
 
-char* BufferManager::writeData(string fileName, int addr)
+//供外部调用写入块
+char* BufferManager::writeData(string fileName, long addr)
 {
-    int blockNum = addr / BLOCKSIZE; //数据存在于file的第 blockNum+1 块内，从blockNum末尾开始读取
+    int blockNum = (int) addr / BLOCKSIZE; //数据存在于file的第 blockNum+1 块内，从blockNum末尾开始读取
     int blockOffset = addr % BLOCKSIZE; //所需数据在块内的偏移量
     int blockNumInBuffer=ifInBuffer(fileName, blockNum);//block在buffer中的位置
     

@@ -23,8 +23,8 @@ class BufferBlock{
     friend class BufferManager;
     
     int blockNum;
-    bool isWritten;
-    bool isValid;
+    bool isWritten;//脏块
+    bool isValid;//是否有效
     string fileName;
     int LRUValue;
     bool Slock;
@@ -49,8 +49,8 @@ class BufferManager{
 public:
     BufferManager();
     ~BufferManager();
-    char* readData(string fileName, int addr);
-    char* writeData(string fileName, int addr);
+    char* readData(string fileName, long addr);
+    char* writeData(string fileName, long addr);
 
     
 };
