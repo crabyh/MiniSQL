@@ -13,6 +13,16 @@
 #include <string>
 using namespace std;
 enum type {INT=0, CHAR=1, STRING=2};
+enum CONDITION_TYPE {EQUAL, NOT_EQUAL, GREATER, GREATER_EQUAL, SMALLER, SMALLER_EQUAL, EXIST};
+
+class Conditions
+{
+public:
+    string attribute;
+    CONDITION_TYPE condition_type;
+    string attributeValue;
+};
+
 class Data;
 
 class Attribute
