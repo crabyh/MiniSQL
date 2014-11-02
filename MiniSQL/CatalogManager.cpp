@@ -57,7 +57,8 @@ Table CatalogManager::createTable(string name, int attriNum, string primarykey)
 }
 
 //插入attribute
-bool CatalogManager::insertAttri(Table& table, string attriName, int type, int length, bool isPrimaryKey, bool isUnique){
+bool CatalogManager::insertAttri(Table& table, string attriName, int type, int length, bool isPrimaryKey, bool isUnique)
+{
     if(isPrimaryKey==1 && attriName!=table.primaryKey)
         throw "primarykey error!";
     Attribute attribute(attriName, type, length, isPrimaryKey, isUnique);
@@ -66,7 +67,8 @@ bool CatalogManager::insertAttri(Table& table, string attriName, int type, int l
 }
 
 //更新Table的其他信息
-bool CatalogManager::initiaTable(Table& table){
+bool CatalogManager::initiaTable(Table& table)
+{
     for(int i=0;i<table.attributes.size();i++)      //更新每条记录长度
     {
         table.eachRecordLength += table.attributes[i].length;
@@ -78,7 +80,16 @@ bool CatalogManager::initiaTable(Table& table){
     return false;
 }
 
+//查询表
+Table CatalogManager::findTable(string tableName){
+    for(int i=0;i<Vtable.size();i++)
+        if(Vtable[i].name==tableName)
+            return Vtable[i];
+    Table table("No such table",-1,0);       //没有查询到表
+    return table;
+}
 
+//查询Index
 
 
 

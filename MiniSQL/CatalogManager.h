@@ -24,6 +24,8 @@ public:
     Table createTable(string name, int attriNum, string primarykey);
     bool insertAttri(Table& table, string attriName, int type, int length, bool isPrimaryKey=false, bool isUnique=false);
     bool initiaTable(Table& table);
+    Table findTable(string tableName);
+    
 };
 
 #endif /* defined(__MiniSQL__CatalogManager__) */

@@ -28,8 +28,7 @@ class BufferBlock{
     bool isValid;//是否有效
     string fileName;
     int LRUValue;
-    bool Slock;
-    bool Xlock;
+    bool pin;
     char values[BLOCKSIZE];
     
     BufferBlock(){initialize();}

@@ -27,7 +27,7 @@ public:
     bool isPrimaryKey = false;
     bool isUnique = false;
 
-    Attribute();
+    Attribute(){}
     Attribute(string name, int type, int length, bool isPrimaryKey = false, bool isUnique = false): name(name), type(type), length(length), isPrimaryKey(isPrimaryKey), isUnique(isUnique){}
 };
 
