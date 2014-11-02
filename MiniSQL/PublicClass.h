@@ -27,14 +27,7 @@ public:
     bool isPrimaryKey = false;
     bool isUnique = false;
 
-    Attribute()
-    {
-        isPrimaryKey = false;
-        isUnique = false;
-        name = "";
-        type = 1;
-        length = 0;
-    }
+    Attribute();
     Attribute(string name, int type, int length, bool isPrimaryKey = false, bool isUnique = false): name(name), type(type), length(length), isPrimaryKey(isPrimaryKey), isUnique(isUnique){}
 };
 
@@ -46,26 +39,17 @@ public:
     int recordNum = 0;      //记录条数
     int attriNum;       //属性数
     int eachRecordLength = 0;       //每条记录的长度
-    int primaryKey;     //主键是第几个
+    string primaryKey;     //主键名字
     int freeNum = 0;       //有几条被删除的记录
     vector<Attribute> attributes;       //指向元数据链表的指针
     vector<string> data;     //指向数据链表的指针
-    long dataBlockInFile = 0;       //data开头在file中的块的位置（每张表的数据一定是从一块的开头开始）
+    long dataBlockInFile = -1;       //data开头在file中的块的位置（每张表的数据一定是从一块的开头开始）
     vector<string> emptyList;        //指向等待删除链表的指针（这东西到底干吗用）
 
     Table(){}
-    //带参数的初始化函数（未完成）
-    Table(string name,int attriNum, vector<Attribute> attributes, int primaryKey)
-    :name(name),attriNum(attriNum), attributes(attributes),primaryKey(primaryKey)
-    {
-        if(primaryKey>=attriNum)
-            throw ("primaryKeyError");
-        for(int i=0;i<attributes.size();i++)
-        {
-            eachRecordLength += attributes[i].length;
-            attriNum+=1;
-        }
-    }
+    //带参数的初始化函数
+    Table(string name,int attriNum, string primaryKey)
+    :name(name),attriNum(attriNum), primaryKey(primaryKey){}
 };
 
 

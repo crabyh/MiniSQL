@@ -49,5 +49,40 @@ CatalogManager:: ~CatalogManager()
     tableFile.close();
 }
 
+//下面3个函数一起初始化Table
+//构造一个Table
+Table CatalogManager::createTable(string name, int attriNum, string primarykey)
+{
+    return Table(name, attriNum, primarykey);
+}
+
+//插入attribute
+bool CatalogManager::insertAttri(Table& table, string attriName, int type, int length, bool isPrimaryKey, bool isUnique){
+    if(isPrimaryKey==1 && attriName!=table.primaryKey)
+        throw "primarykey error!";
+    Attribute attribute(attriName, type, length, isPrimaryKey, isUnique);
+    table.attributes.push_back(attribute);
+    return true;
+}
+
+//更新Table的其他信息
+bool CatalogManager::initiaTable(Table& table){
+    for(int i=0;i<table.attributes.size();i++)      //更新每条记录长度
+    {
+        table.eachRecordLength += table.attributes[i].length;
+        table.attriNum+=1;
+    }
+    for(int i=0;i<table.attriNum;i++)       //检查至少有一个PK
+        if (table.attributes[i].isPrimaryKey == 1)
+            return true;
+    return false;
+}
+
+
+
+
+
+
+
 
 
