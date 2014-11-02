@@ -22,21 +22,17 @@ CatalogManager::CatalogManager()
         tableFile >> table.blockNum;
         tableFile >> table.recordNum;
         tableFile >> table.attriNum;
-        tableFile >> table.totalLength;
+        tableFile >> table.eachRecordLength;
         tableFile >> table.primaryKey;
-        tableFile >> table.emptyNum;
+        tableFile >> table.freeNum;
         int j;
-        int a = 0;
+        string a = 0;
         for ( j = 0; j < table.recordNum; j++)
         {
             tableFile >> a;
-            table.recordList.push_back(a);
+            table.data->push_back(a);
         }
-        for (j = 0; j < table.emptyNum; j++)
-        {
-            tableFile >> a;
-            table.emptyList.push_back(a);
-        }
+        table.freeNum=NULL;
         for (j = 0; j < table.attriNum; j++)
         {
             Attribute attribute;
@@ -45,62 +41,47 @@ CatalogManager::CatalogManager()
             tableFile >> attribute.length;
             tableFile >> attribute.isPrimaryKey;
             tableFile >> attribute.isUnique;
-            table.attributes.push_back(attribute);
+            table.attributes->push_back(attribute);
         }
-        ttable.push_back(table);
+        Vtable.push_back(table);
     }
     tableFile.close();
-    fstream  indexin("d:/index.g", ios::in);
-    indexin >> indnum;
-    for (int i = 0; i < indnum; i++)
-    {
-        Index index;
-        indexin >> index.indexName;
-        indexin >> index.tableName;
-        indexin >> index.attriNum;
-        indexin >> index.blockNum;
-        indexin >> index.freeList;
-        indexin >> index.attriLength;
-        indexin >> index.rootAddress;
-        indexin >> index.type;
-        iindex.push_back(index);
-    }
-    indexin.close();
+    fstream  indexFile("d:/index.g", ios::in);
 }
 
 //将table和index信息从容器中写入到文
 CatalogManager:: ~CatalogManager()
 {
-    fstream  tableout( "d:/table.g", ios::out);
-    tableout << tableNum << endl;
+    fstream  tableFile( "d:/table.g", ios::out);
+    tableFile << tableNum << endl;
     int i, j;
     for (i = 0; i < tableNum; i++)
     {
-        tableout << ttable[i].name << endl;
-        tableout << ttable[i].blockNum << " " << ttable[i].recordNum << " " << ttable[i].attriNum << endl;
-        tableout << ttable[i].totalLength << " ";
-        tableout << ttable[i].primaryKey << " ";
-        tableout << ttable[i].emptyNum << endl;
-        for (j = 0; j < ttable[i].recordNum; j++)
+        tableFile << Vtable[i].name << endl;
+        tableFile << Vtable[i].blockNum << " " << Vtable[i].recordNum << " " << Vtable[i].attriNum << endl;
+        tableFile << Vtable[i].totalLength << " ";
+        tableFile << Vtable[i].primaryKey << " ";
+        tableFile << Vtable[i].emptyNum << endl;
+        for (j = 0; j < Vtable[i].recordNum; j++)
         {
-            tableout << ttable[i].recordList[j] << " ";
+            tableFile << Vtable[i].recordList[j] << " ";
         }
-        tableout << endl;
-        for(j = 0; j < ttable[i].emptyNum; j++)
+        tableFile << endl;
+        for(j = 0; j < Vtable[i].emptyNum; j++)
         {
-            tableout << ttable[i].emptyList[j] << " ";
+            tableFile << Vtable[i].emptyList[j] << " ";
         }
-        tableout << endl;
-        for (j = 0; j < ttable[i].attriNum; j++)
+        tableFile << endl;
+        for (j = 0; j < Vtable[i].attriNum; j++)
         {
-            tableout << ttable[i].attributes[j].name << " ";
-            tableout << ttable[i].attributes[j].type << " ";
-            tableout << ttable[i].attributes[j].length << " ";
-            tableout << ttable[i].attributes[j].isPrimaryKey << " ";
-            tableout << ttable[i].attributes[j].isUnique << endl;
+            tableFile << Vtable[i].attributes[j].name << " ";
+            tableFile << Vtable[i].attributes[j].type << " ";
+            tableFile << Vtable[i].attributes[j].length << " ";
+            tableFile << Vtable[i].attributes[j].isPrimaryKey << " ";
+            tableFile << Vtable[i].attributes[j].isUnique << endl;
         }
     }
-    tableout.close();
+    tableFile.close();
     fstream  indexout("d:/index.g", ios::out);
     indexout << indnum << endl;
     for (i = 0; i < indnum; i++)

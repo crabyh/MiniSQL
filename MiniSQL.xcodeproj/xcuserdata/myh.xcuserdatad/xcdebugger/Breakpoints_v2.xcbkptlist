@@ -31,24 +31,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "34"
             endingLineNumber = "34"
-            landmarkName = "class Attribute"
-            landmarkType = "3">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MiniSQL/PublicClass.h"
-            timestampString = "436517437.565729"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "47"
-            endingLineNumber = "47"
-            landmarkName = "class Table"
-            landmarkType = "3">
+            landmarkName = "Attribute()"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -63,7 +47,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "147"
             endingLineNumber = "147"
-            landmarkName = "BufferManager::writeData(string fileName, long addr, void* dataAddr, int recordSize, int recordNum)"
+            landmarkName = "BufferManager::writeData(string fileName, long addr, char* dataAddr, int recordSize, int recordNum)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -86,7 +70,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MiniSQL/BufferManager.cpp"
@@ -95,7 +79,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "170"
             endingLineNumber = "170"
-            landmarkName = "BufferManager::writeData(string fileName, long addr, void* dataAddr, int recordSize, int recordNum)"
+            landmarkName = "BufferManager::writeData(string fileName, long addr, char* dataAddr, int recordSize, int recordNum)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -111,7 +95,39 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "150"
             endingLineNumber = "150"
-            landmarkName = "BufferManager::writeData(string fileName, long addr, void* dataAddr, int recordSize, int recordNum)"
+            landmarkName = "BufferManager::writeData(string fileName, long addr, char* dataAddr, int recordSize, int recordNum)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MiniSQL/BufferManager.cpp"
+            timestampString = "436529073.870928"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "181"
+            endingLineNumber = "181"
+            landmarkName = "main(int argc, const char * argv[])"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MiniSQL/CatalogManager.cpp"
+            timestampString = "436531955.770085"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "41"
+            endingLineNumber = "41"
+            landmarkName = "CatalogManager::CatalogManager()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

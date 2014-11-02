@@ -17,12 +17,16 @@ class Data;
 
 class Attribute
 {
+public:
+    friend class CatalogManager;
     friend class Table;
     string name;
+    string indexName = "";      //index名
     int type;
     int length;
     bool isPrimaryKey;
     bool isUnique;
+
     Attribute()
     {
         isPrimaryKey = false;
@@ -36,6 +40,8 @@ class Attribute
 
 class Table
 {
+public:
+    friend class CatalogManager;
     string name;     //表名
     int blockNum = 0;       //在name.table中占用的block数
     int recordNum = 0;      //记录条数
@@ -45,8 +51,10 @@ class Table
     int freeNum = 0;       //有几条被删除的记录
     vector<Attribute>* attributes;       //指向元数据链表的指针
     vector<string>* data = NULL;     //指向数据链表的指针
+    long dataBlockInFile = 0;       //data在file中的块的位置（每张表的数据一定是从一块的开头开始）
     vector<string>* emptyList = NULL;        //指向等待删除链表的指针
-public:
+
+    Table(){}
     //带参数的初始化函数（未完成）
     Table(string name,int attriNum, vector<Attribute>* attributes, int primaryKey)
     :name(name),attriNum(attriNum), attributes(attributes),primaryKey(primaryKey)
@@ -61,15 +69,6 @@ public:
     }
 };
 
-class Index
-{
-    string indexName;       //索引名
-    Table* tableAddr;       //所在表的地址
-    int OnAttriNum;     //在第几个属性上建立的索引
-public:
-    //带参数的初始化函数
-    Index(string indexName, Table* tableAddr, int OnAttriNum):indexName(indexName),tableAddr(tableAddr),OnAttriNum(OnAttriNum){}
-};
 
 class Data
 {

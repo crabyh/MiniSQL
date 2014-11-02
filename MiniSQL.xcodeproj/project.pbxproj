@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		132CEF671A03753600583B3C /* BufferManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 132CEF651A03753600583B3C /* BufferManager.cpp */; };
+		13CD38211A04EE4600337132 /* CatalogManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13CD38201A04EE4600337132 /* CatalogManager.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +29,7 @@
 		132CEF661A03753600583B3C /* BufferManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BufferManager.h; sourceTree = "<group>"; };
 		13CD381D1A0497B200337132 /* CatalogManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CatalogManager.h; sourceTree = "<group>"; };
 		13CD381F1A04A6E400337132 /* PublicClass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PublicClass.h; sourceTree = "<group>"; };
+		13CD38201A04EE4600337132 /* CatalogManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CatalogManager.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +64,7 @@
 			children = (
 				132CEF651A03753600583B3C /* BufferManager.cpp */,
 				132CEF661A03753600583B3C /* BufferManager.h */,
+				13CD38201A04EE4600337132 /* CatalogManager.cpp */,
 				13CD381D1A0497B200337132 /* CatalogManager.h */,
 				13CD381F1A04A6E400337132 /* PublicClass.h */,
 			);
@@ -125,6 +128,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				132CEF671A03753600583B3C /* BufferManager.cpp in Sources */,
+				13CD38211A04EE4600337132 /* CatalogManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

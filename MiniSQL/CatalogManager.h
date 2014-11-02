@@ -15,9 +15,7 @@
 class CatalogManager
 {
     vector<Table> Vtable;
-    vector<Index> Vindex;
     int tableNum;
-    int IndexNum;
     
 public:
     CatalogManager();
