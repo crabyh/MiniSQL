@@ -31,6 +31,7 @@ public:
     Attribute findIndexAttri(string indexName);
     bool dropTable(string tableName);
     bool dropIndex(string indexName);
+    bool deleteAttri(Table &table, string attriName);
     
 };
 

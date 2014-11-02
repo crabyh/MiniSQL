@@ -61,9 +61,10 @@ bool CatalogManager::insertAttri(Table& table, string attriName, int type, int l
         throw "primarykey error!";
     Attribute attribute(attriName, type, length, isPrimaryKey, isUnique);
     table.attributes.push_back(attribute);
+    initiaTable(table);
     return true;
 }
-//更新Table的其他信息
+//更新Table的其他信息(在插入或者删除attributes后自动调用)
 bool CatalogManager::initiaTable(Table& table)
 {
     for(int i=0;i<table.attributes.size();i++)      //更新每条记录长度
@@ -145,6 +146,17 @@ bool CatalogManager::dropIndex(string indexName)
     return false;       //失败返回false
 }
 
+//从表中删除一个属性
+bool CatalogManager::deleteAttri(Table &table, string attriName){
+    for(int i=0;i<table.attributes.size();++i)
+        if(table.attributes[i].name == attriName)
+        {
+            table.attributes.erase(table.attributes.begin()+i);
+            return true;        //成功返回true
+        }
+    
+    return false;       //失败返回false
+}
 
 
 
