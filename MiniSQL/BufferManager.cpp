@@ -16,8 +16,8 @@ bool BufferBlock::initialize()
     isValid = false;
     fileName = "";
     LRUValue = 0;
-    Slock = false;
-    Xlock = false;
+    pin = false;
+    pin = false;
     
     for(int bufferNum=0;bufferNum<BLOCKSIZE;bufferNum++)
         values[bufferNum]='\0';

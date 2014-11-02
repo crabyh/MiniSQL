@@ -9,7 +9,7 @@
 #include "CatalogManager.h"
 #include "PublicClass.h"
 
-//初始化catalogmanager并从file中读取数据（指针会无效？）
+//初始化catalogmanager并从file中读取元数据
 CatalogManager::CatalogManager()
 {
     fstream  tableFile("table.g", ios::in|ios::binary);
@@ -30,7 +30,6 @@ CatalogManager::CatalogManager()
         Vtable.push_back(table);
     }
     tableFile.close();
-    fstream  indexFile("index.g", ios::in);
 }
 
 //将table的信息从容器中写入到文
@@ -55,7 +54,6 @@ Table CatalogManager::createTable(string name, int attriNum, string primarykey)
 {
     return Table(name, attriNum, primarykey);
 }
-
 //插入attribute
 bool CatalogManager::insertAttri(Table& table, string attriName, int type, int length, bool isPrimaryKey, bool isUnique)
 {
@@ -65,7 +63,6 @@ bool CatalogManager::insertAttri(Table& table, string attriName, int type, int l
     table.attributes.push_back(attribute);
     return true;
 }
-
 //更新Table的其他信息
 bool CatalogManager::initiaTable(Table& table)
 {
@@ -80,16 +77,81 @@ bool CatalogManager::initiaTable(Table& table)
     return false;
 }
 
+//创建Index
+bool CatalogManager::createIndex(string indexName, string tableName, string attriName){
+    for(int i=0;i<Vtable.size();i++)
+        if(Vtable[i].name == tableName)
+            for(int j=0;j<Vtable[i].attributes.size();j++)
+                if(Vtable[i].attributes[j].name == attriName && Vtable[i].attributes[j].indexName == "")
+                {
+                    Vtable[i].attributes[j].indexName = indexName;
+                    return true;    //成功返回true
+                }
+    return false;       //失败返回false
+                    
+}
+
 //查询表
 Table CatalogManager::findTable(string tableName){
     for(int i=0;i<Vtable.size();i++)
-        if(Vtable[i].name==tableName)
+        if(Vtable[i].name == tableName)
             return Vtable[i];
-    Table table("No such table",-1,0);       //没有查询到表
+    Table table("notExit",-1,0);       //没有查询到表
     return table;
 }
 
 //查询Index
+Table CatalogManager::findIndexTable(string indexName)
+{
+    for(int i=0;i<Vtable.size();i++)
+        for(int j=0;j<Vtable[i].attributes.size();j++)
+            if(Vtable[i].attributes[j].indexName==indexName)
+                return Vtable[i];
+    Table table("notExit",-1,0);       //没有查询到Index
+    return table;
+}
+Attribute CatalogManager::findIndexAttri(string indexName)
+{
+    for(int i=0;i<Vtable.size();i++)
+        for(int j=0;j<Vtable[i].attributes.size();j++)
+            if(Vtable[i].attributes[j].indexName==indexName)
+                return Vtable[i].attributes[j];
+    Attribute attribute("notExit",0,0);       //没有查询到Index
+    return attribute;
+}
+
+//删除table，同时删除table上的index
+bool CatalogManager::dropTable(string tableName)
+{
+    for(int i=0;i<Vtable.size();i++)
+        if(Vtable[i].name==tableName)
+        {
+            Vtable.erase(Vtable.begin()+i);
+            return true;        //成功返回true
+        }
+    return false;       //失败返回false
+}
+
+//删除index
+bool CatalogManager::dropIndex(string indexName)
+{
+    for(int i=0;i<Vtable.size();i++)
+        for(int j=0;j<Vtable[i].attributes.size();j++)
+            if(Vtable[i].attributes[j].indexName==indexName)
+            {
+                Vtable[i].attributes[j].indexName = "";
+                return true;        //成功返回true
+            }
+    return false;       //失败返回false
+}
+
+
+
+
+
+
+
+
 
 
 

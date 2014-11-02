@@ -16,6 +16,7 @@
 class CatalogManager
 {
     vector<Table> Vtable;
+    vector<Table>::iterator VtableIt;
     int tableNum;
     
 public:
@@ -24,7 +25,12 @@ public:
     Table createTable(string name, int attriNum, string primarykey);
     bool insertAttri(Table& table, string attriName, int type, int length, bool isPrimaryKey=false, bool isUnique=false);
     bool initiaTable(Table& table);
+    bool createIndex(string indexName, string tableName, string attriName);
     Table findTable(string tableName);
+    Table findIndexTable(string indexName);
+    Attribute findIndexAttri(string indexName);
+    bool dropTable(string tableName);
+    bool dropIndex(string indexName);
     
 };
 

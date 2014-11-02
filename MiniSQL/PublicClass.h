@@ -42,6 +42,7 @@ public:
     string primaryKey;     //主键名字
     int freeNum = 0;       //有几条被删除的记录
     vector<Attribute> attributes;       //指向元数据链表的指针
+    vector<Attribute>::iterator AttriIt;     //Attribute的iterator
     vector<string> data;     //指向数据链表的指针
     long dataBlockInFile = -1;       //data开头在file中的块的位置（每张表的数据一定是从一块的开头开始）
     vector<string> emptyList;        //指向等待删除链表的指针（这东西到底干吗用）
