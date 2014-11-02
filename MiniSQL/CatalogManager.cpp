@@ -58,7 +58,9 @@ Table CatalogManager::createTable(string name, int attriNum, string primarykey)
 bool CatalogManager::insertAttri(Table& table, string attriName, int type, int length, bool isPrimaryKey, bool isUnique)
 {
     if(isPrimaryKey==1 && attriName!=table.primaryKey)
-        throw "primarykey error!";
+        return false;       //primarykey与table中的不对应
+    if(getAttriNum(table, attriName)!=-1)
+        return false;       //属性已经存在
     Attribute attribute(attriName, type, length, isPrimaryKey, isUnique);
     table.attributes.push_back(attribute);
     initiaTable(table);
@@ -152,10 +154,22 @@ bool CatalogManager::deleteAttri(Table &table, string attriName){
         if(table.attributes[i].name == attriName)
         {
             table.attributes.erase(table.attributes.begin()+i);
+            initiaTable(table);     //更新table数据
             return true;        //成功返回true
         }
-    
     return false;       //失败返回false
+}
+
+//检查attriNum在第几个属性
+int CatalogManager::getAttriNum(Table &table, string attriName){
+    for(int i=0;i<table.attributes.size();++i)
+        if(table.attributes[i].name == attriName)
+        {
+            table.attributes.erase(table.attributes.begin()+i);
+            initiaTable(table);     //更新table数据
+            return i;        //成功返回序号
+        }
+    return -1;       //失败返回-1
 }
 
 

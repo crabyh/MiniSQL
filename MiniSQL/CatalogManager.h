@@ -32,6 +32,7 @@ public:
     bool dropTable(string tableName);
     bool dropIndex(string indexName);
     bool deleteAttri(Table &table, string attriName);
+    int getAttriNum(Table &table, string attriName);
     
 };
 
