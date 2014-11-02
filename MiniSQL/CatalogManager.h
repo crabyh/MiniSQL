@@ -11,6 +11,7 @@
 
 #include "PublicClass.h"
 #include <fstream>
+#include <iostream>
 
 class CatalogManager
 {
@@ -20,6 +21,7 @@ class CatalogManager
 public:
     CatalogManager();
     ~CatalogManager();
+    bool createTable();
 };
 
 #endif /* defined(__MiniSQL__CatalogManager__) */

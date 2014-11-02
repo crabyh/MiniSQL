@@ -12,7 +12,7 @@
 #include <vector>
 #include <string>
 using namespace std;
-
+enum type {INT=0, CHAR=1, STRING=2};
 class Data;
 
 class Attribute
@@ -20,12 +20,12 @@ class Attribute
 public:
     friend class CatalogManager;
     friend class Table;
-    string name;
+    string name = "";
     string indexName = "";      //index名
-    int type;
-    int length;
-    bool isPrimaryKey;
-    bool isUnique;
+    int type = INT;
+    int length = 0;
+    bool isPrimaryKey = false;
+    bool isUnique = false;
 
     Attribute()
     {
@@ -41,7 +41,6 @@ public:
 class Table
 {
 public:
-    friend class CatalogManager;
     string name;     //表名
     int blockNum = 0;       //在name.table中占用的block数
     int recordNum = 0;      //记录条数
@@ -49,21 +48,21 @@ public:
     int eachRecordLength = 0;       //每条记录的长度
     int primaryKey;     //主键是第几个
     int freeNum = 0;       //有几条被删除的记录
-    vector<Attribute>* attributes;       //指向元数据链表的指针
-    vector<string>* data = NULL;     //指向数据链表的指针
-    long dataBlockInFile = 0;       //data在file中的块的位置（每张表的数据一定是从一块的开头开始）
-    vector<string>* emptyList = NULL;        //指向等待删除链表的指针
+    vector<Attribute> attributes;       //指向元数据链表的指针
+    vector<string> data;     //指向数据链表的指针
+    long dataBlockInFile = 0;       //data开头在file中的块的位置（每张表的数据一定是从一块的开头开始）
+    vector<string> emptyList;        //指向等待删除链表的指针（这东西到底干吗用）
 
     Table(){}
     //带参数的初始化函数（未完成）
-    Table(string name,int attriNum, vector<Attribute>* attributes, int primaryKey)
+    Table(string name,int attriNum, vector<Attribute> attributes, int primaryKey)
     :name(name),attriNum(attriNum), attributes(attributes),primaryKey(primaryKey)
     {
         if(primaryKey>=attriNum)
             throw ("primaryKeyError");
-        for(int i=0;i<attributes->size();i++)
+        for(int i=0;i<attributes.size();i++)
         {
-            eachRecordLength += attributes->at(i).length;
+            eachRecordLength += attributes[i].length;
             attriNum+=1;
         }
     }

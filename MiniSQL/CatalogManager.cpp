@@ -9,97 +9,45 @@
 #include "CatalogManager.h"
 #include "PublicClass.h"
 
+//初始化catalogmanager并从file中读取数据（指针会无效？）
 CatalogManager::CatalogManager()
 {
-    tableNum = 0;
-    IndexNum = 0;
-    fstream  tableFile("d:/table.g", ios::in);
-    tableFile >> tableNum;
+    fstream  tableFile("table.g", ios::in|ios::binary);
+    tableFile.read((char*)this, sizeof(CatalogManager));        //读取catalogmanager
     for ( int i = 0; i < tableNum ; i++)
     {
         Table table;
-        tableFile >> table.name;
-        tableFile >> table.blockNum;
-        tableFile >> table.recordNum;
-        tableFile >> table.attriNum;
-        tableFile >> table.eachRecordLength;
-        tableFile >> table.primaryKey;
-        tableFile >> table.freeNum;
-        int j;
-        string a = 0;
-        for ( j = 0; j < table.recordNum; j++)
-        {
-            tableFile >> a;
-            table.data->push_back(a);
-        }
-        table.freeNum=NULL;
-        for (j = 0; j < table.attriNum; j++)
+        tableFile.read((char*)&table,sizeof(Table));        //读取table
+        table.attributes.clear();       //清空指针
+        table.data.clear();
+        table.emptyList.clear();
+        for (int j = 0; j < table.attriNum; j++)
         {
             Attribute attribute;
-            tableFile >> attribute.name;
-            tableFile >> attribute.type;
-            tableFile >> attribute.length;
-            tableFile >> attribute.isPrimaryKey;
-            tableFile >> attribute.isUnique;
-            table.attributes->push_back(attribute);
+            tableFile.read((char*)&attribute, sizeof(attribute));       //读取attribute
+            table.attributes.push_back(attribute);
         }
         Vtable.push_back(table);
     }
     tableFile.close();
-    fstream  indexFile("d:/index.g", ios::in);
+    fstream  indexFile("index.g", ios::in);
 }
 
-//将table和index信息从容器中写入到文
+//将table的信息从容器中写入到文
 CatalogManager:: ~CatalogManager()
-{
-    fstream  tableFile( "d:/table.g", ios::out);
-    tableFile << tableNum << endl;
-    int i, j;
-    for (i = 0; i < tableNum; i++)
+{   //需要先清理freelist?!
+    fstream  tableFile( "table.g", ios::out|ios::binary|ios::app);
+    tableFile.write((char*)this, sizeof(CatalogManager));       //写入catalogmanager
+    for (int i = 0; i < tableNum; i++)
     {
-        tableFile << Vtable[i].name << endl;
-        tableFile << Vtable[i].blockNum << " " << Vtable[i].recordNum << " " << Vtable[i].attriNum << endl;
-        tableFile << Vtable[i].totalLength << " ";
-        tableFile << Vtable[i].primaryKey << " ";
-        tableFile << Vtable[i].emptyNum << endl;
-        for (j = 0; j < Vtable[i].recordNum; j++)
+        tableFile.write((char*)&Vtable[i], sizeof(Table));      //写入table
+        for(int j=0; j<Vtable[i].attriNum; j++)
         {
-            tableFile << Vtable[i].recordList[j] << " ";
-        }
-        tableFile << endl;
-        for(j = 0; j < Vtable[i].emptyNum; j++)
-        {
-            tableFile << Vtable[i].emptyList[j] << " ";
-        }
-        tableFile << endl;
-        for (j = 0; j < Vtable[i].attriNum; j++)
-        {
-            tableFile << Vtable[i].attributes[j].name << " ";
-            tableFile << Vtable[i].attributes[j].type << " ";
-            tableFile << Vtable[i].attributes[j].length << " ";
-            tableFile << Vtable[i].attributes[j].isPrimaryKey << " ";
-            tableFile << Vtable[i].attributes[j].isUnique << endl;
+            tableFile.write((char*)&Vtable[i].attributes, sizeof(Attribute));//写入attribute
         }
     }
     tableFile.close();
-    fstream  indexout("d:/index.g", ios::out);
-    indexout << indnum << endl;
-    for (i = 0; i < indnum; i++)
-    {
-        indexout << iindex[i].indexName << " ";
-        indexout << iindex[i].tableName << " ";
-        indexout << iindex[i].attriNum << " ";
-        indexout << iindex[i].blockNum << " ";
-        indexout << iindex[i].freeList << " ";
-        indexout << iindex[i].attriLength << " ";
-        indexout << iindex[i].rootAddress << " ";
-        indexout << iindex[i].type << endl;
-    }
-    
-    indexout.close();
 }
 
 
-int main(int argc, const char * argv[]){
-    
-}
+
