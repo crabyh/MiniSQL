@@ -22,13 +22,13 @@ class CatalogManager
 public:
     CatalogManager();
     ~CatalogManager();
-    Table createTable(string name, int attriNum, string primarykey);
+    Table &createTable(string name, string primarykey);
     bool insertAttri(Table& table, string attriName, int type, int length, bool isPrimaryKey=false, bool isUnique=false);
     bool initiaTable(Table& table);
     bool createIndex(string indexName, string tableName, string attriName);
-    Table findTable(string tableName);
-    Table findIndexTable(string indexName);
-    Attribute findIndexAttri(string indexName);
+    int findTable(string tableName);
+    int findIndexTable(string indexName);
+    int findIndexAttri(string indexName);
     bool dropTable(string tableName);
     bool dropIndex(string indexName);
     bool deleteAttri(Table &table, string attriName);

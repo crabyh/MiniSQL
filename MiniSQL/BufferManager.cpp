@@ -47,6 +47,7 @@ int BufferManager::getBufferToReplace()
             buffer[bufferNum].initialize();
             buffer[bufferNum].isValid = true;
             flashLRU(bufferNum);
+            cout<<bufferNum<<endl;
             return bufferNum;
         }
     //没有空块，使用LRU策略
@@ -175,11 +176,21 @@ bool BufferManager::writeData(string fileName, long addr, char* dataAddr, int re
     return true;
 }
 
-int main(int argc, const char * argv[]) {
-    BufferManager m;
-    string s="HelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorldHelloWorld";
-    m.writeData("abc",0x00000000, &s[0], sizeof(char[11]), 200);
-    printf( "%s" , m.readData("abc", 0x00000000));
-}
+//int main(int argc, const char * argv[]) {
+//    BufferManager m;
+//    string s="HelloWorld";
+//    m.writeData("abc",0, &s[0], sizeof(s), 1);
+//    m.writeData("abc",2*BLOCKSIZE, &s[0], sizeof(s), 1);
+//    m.writeData("abc",1*BLOCKSIZE, &s[0], sizeof(s), 1);
+//    m.writeData("abc",0*BLOCKSIZE, &s[0], sizeof(s), 1);
+//    m.writeData("abc",3*BLOCKSIZE, &s[0], sizeof(s), 1);
+//    m.writeData("abc",4*BLOCKSIZE, &s[0], sizeof(s), 1);
+//    m.writeData("abc",5*BLOCKSIZE, &s[0], sizeof(s), 1);
+//    printf( "%s" , m.readData("abc", 0x00000000));
+//}
+
+
+
+
 
 

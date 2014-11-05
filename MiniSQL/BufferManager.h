@@ -8,7 +8,7 @@
 
 #ifndef __MiniSQL_BufferManager__BufferManager__
 #define __MiniSQL_BufferManager__BufferManager__
-#define MAXBUFFERNUM 40 //BUFFER中的块数
+#define MAXBUFFERNUM 20 //BUFFER中的块数
 #define BLOCKSIZE 4096//在MAIN.H中定义？
 
 #include <iostream>

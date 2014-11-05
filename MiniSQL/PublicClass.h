@@ -47,7 +47,7 @@ public:
     string name;     //表名
     int blockNum = 0;       //在name.table中占用的block数
     int recordNum = 0;      //记录条数
-    int attriNum;       //属性数
+    int attriNum = 0;       //属性数
     int eachRecordLength = 0;       //每条记录的长度
     string primaryKey;     //主键名字
     int freeNum = 0;       //有几条被删除的记录
@@ -59,8 +59,8 @@ public:
 
     Table(){}
     //带参数的初始化函数
-    Table(string name,int attriNum, string primaryKey)
-    :name(name),attriNum(attriNum), primaryKey(primaryKey){}
+    Table(string name, string primaryKey)
+    :name(name), primaryKey(primaryKey){}
 };
 
 
