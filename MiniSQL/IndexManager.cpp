@@ -8,18 +8,11 @@
 
 #include "IndexManager.h"
 
-COMPARE_RESULT compare(KeyType key1, KeyType key2)
-{
-    // TODO
-    return EQUAL;
-}
-
 // Node.h
 Node::Node()
 {
     m_nodeType = LEAF; // set node type
     m_keyNum = 0; // set keynum
-    
 }
 
 Node::~Node()
@@ -32,10 +25,12 @@ int Node::getKeyIndex(KeyType key) // use binary search to find key
     int left = 0;
     int right = m_keyNum - 1;
     int current;
-    while (left != right) { // binary search
+    while (left != right) // binary search
+    {
         current = (left + right) / 2;
         KeyType currentKey = m_keyValues[current];
-        if (GREATER == compare(key, currentKey)) // compare currentKey with key
+//        if (GREATER == compare(key, currentKey)) // compare currentKey with key
+        if (key > currentKey)
         {
             left = current + 1;
         }
@@ -48,9 +43,18 @@ int Node::getKeyIndex(KeyType key) // use binary search to find key
 }
 
 // Innernode.h
-InnerNode::InnerNode()
+InnerNode::InnerNode(int leafDataLength)
 {
     m_nodeType = INNER;
+    this->leafDataLength = leafDataLength;
+    // a tree node is 4096 bytes and comprises n keyvalues and n+1 recordPointers (which is int)
+    // thus leafDataLength * n + 4*(n+1) = 4096
+    maxLeafDataNum = (4096 - 4) / (this->leafDataLength + 4);
+    minLeafDataNum = ceil(maxLeafDataNum / 2);
+    minKeyValueNum = minLeafDataNum;
+    maxKeyValueNum = maxLeafDataNum;
+    maxChildNum = maxKeyValueNum + 1;
+    minChildNum = minKeyValueNum + 1;
 }
 
 InnerNode::~InnerNode()
@@ -69,7 +73,7 @@ void InnerNode::clear() // clear this node
 
 void InnerNode::split(Node * parent, int childIndex)
 {
-    InnerNode * newNode = new InnerNode(); 
+    InnerNode * newNode = new InnerNode(parent->leafDataLength);
     newNode->m_nodeType = INNER; // set new node's type
     newNode->m_keyNum = MINIMUM_KEY;
     for (int i = 0; i < MINIMUM_KEY; ++i)  // copy the second half of the keys to the new node
@@ -152,7 +156,8 @@ void InnerNode::borrowFrom(Node * siblingNode, Node * parentNode, int keyIndex, 
 
 int InnerNode::getChildIndex(KeyType key, int keyIndex) const
 {
-    if (GREATER_EQUAL == compare(key, m_keyValues[keyIndex]))
+//    if (GREATER_EQUAL == compare(key, m_keyValues[keyIndex]))
+    if (key >= m_keyValues[keyIndex])
     {
         return keyIndex + 1;
     }
@@ -164,7 +169,7 @@ int InnerNode::getChildIndex(KeyType key, int keyIndex) const
 
 // LeafNode.h
 
-LeafNode::LeafNode() : Node()
+LeafNode::LeafNode(int leafDataLength) : Node()
 {
     m_nodeType = LEAF;
     m_leftSibling = NULL;
@@ -183,19 +188,21 @@ void LeafNode::clear()
 void LeafNode::insert(KeyType key, const DataType & data)
 {
     int i;
-    for (i = m_keyNum; i >= 1 && GREATER == compare(m_keyValues[i - 1], key); --i)
+//    for (i = m_keyNum; i >= 1 && GREATER == compare(m_keyValues[i - 1], key); --i)
+    for (i = m_keyNum; i >= 1 && m_keyValues[i - 1] > key; --i)
     {
         m_keyValues[i] = m_keyValues[i - 1];
         m_data[i] = m_data[i - 1];
     }
-    this->m_data[i] = data;
+//    this->m_data[i] = data;
+    this->m_data.push_back(data);
     this->m_keyValues[i] = key;
     this->m_keyNum++;
 }
 
 void LeafNode::split(Node *parentNode, int childIndex)
 {
-    LeafNode *newLeafNode = new LeafNode();
+    LeafNode *newLeafNode = new LeafNode(parentNode->leafDataLength);
     // set attributes of new node and old node
     this->m_keyNum = MINIMUM_LEAF;
     newLeafNode->m_keyNum = MINIMUM_LEAF + 1;
@@ -255,10 +262,11 @@ int LeafNode::getChildIndex(KeyType key, int keyIndex) const
 
 // BPlusTree.h
 
-BPlusTree::BPlusTree()
+BPlusTree::BPlusTree(int leafDataLength)
 {
     m_root = NULL;
     m_dataHead = NULL;
+    this->leafDataLength = leafDataLength;
 }
 
 BPlusTree::~BPlusTree()
@@ -274,18 +282,18 @@ bool BPlusTree::insertValue(KeyType key, const DataType & data)
     }
     if (NULL == m_root) // there is no root
     {
-        m_root = new LeafNode();
+        m_root = new LeafNode(leafDataLength);
         m_dataHead = (LeafNode *)m_root;
         m_maxKey = key;
     }
     if (m_root->m_keyNum >= MAXIMUM_KEY) // root is full
     {
-        InnerNode * newNode = new InnerNode();
+        InnerNode * newNode = new InnerNode(leafDataLength);
         newNode->m_children[0] = m_root;
         m_root->split(newNode, 0);
         m_root = newNode;
     }
-    if (GREATER == compare(key, m_maxKey)) // update max key
+    if (key > m_maxKey)
     {
         m_maxKey = key;
     }
@@ -297,7 +305,7 @@ void BPlusTree::recursive_insert(Node * parentNode, KeyType key, const DataType 
 {
     if (LEAF == parentNode->m_nodeType)
     {
-        insertValue(key, data);
+        ((LeafNode *)parentNode)->insert(key, data); // insert directly
     }
     else
     {
@@ -307,7 +315,7 @@ void BPlusTree::recursive_insert(Node * parentNode, KeyType key, const DataType 
         if (childNode->m_keyNum >= MAXIMUM_LEAF)
         {
             childNode->split(parentNode, childIndex);
-            if (GREATER_EQUAL ==  compare(parentNode->m_keyValues[childIndex], key))
+            if (parentNode->m_keyValues[childIndex] >= key)
             {
                 childNode = ((InnerNode *)parentNode)->m_children[childIndex + 1];
             }
@@ -387,7 +395,7 @@ void BPlusTree::recursive_remove(Node * parentNode, KeyType key)
     int childIndex = parentNode->getChildIndex(key, keyIndex);
     if (LEAF == parentNode->m_nodeType) // find target node
     {
-        if (EQUAL == compare(key, m_maxKey) && keyIndex > 0)
+        if ((key == m_maxKey) && (keyIndex > 0))
         {
             m_maxKey = parentNode->m_keyValues[keyIndex - 1];
         }
@@ -452,7 +460,7 @@ bool BPlusTree::updateValue(KeyType oldKey, KeyType newKey)
     {
         DataType dataValue;
         remove(oldKey, dataValue);
-        if (INVALID_INDEX == atoi(dataValue.c_str()))
+        if (INVALID_INDEX == dataValue)
         {
             return false;
         }

@@ -12,7 +12,6 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include "BufferManager.h"
 
 using namespace std;
 
@@ -27,8 +26,8 @@ const int MINIMUM_CHILD = MINIMUM_KEY+1; // 最小子树个数
 const int MAXIMUM_CHILD = MAXIMUM_KEY+1; // 最大子树个数
 const int MINIMUM_LEAF = MINIMUM_KEY;    // 最小叶子结点键值个数
 const int MAXIMUM_LEAF = MAXIMUM_KEY;    // 最大叶子结点键值个数
-typedef string DataType;
-typedef string KeyType;
+typedef int DataType; // data stored in leaf represent offset of records in the table, thus use int
+typedef string KeyType; // all attributes are treated as string ( int and float are formatted into string )
 
 /* Abstract nodes which inner and leaf nodes inherite from
  * Must implement removeKey, split, mergeChild, clear, borrowFrom, getChildIndex in child class
@@ -52,13 +51,19 @@ public:
     NODE_TYPE m_nodeType;
     int m_keyNum;
     KeyType m_keyValues[MAXIMUM_KEY];
-    int order; // calculate according to index TODO
+    int maxLeafDataNum;
+    int minLeafDataNum;
+    int maxChildNum;
+    int minChildNum;
+    int maxKeyValueNum;
+    int minKeyValueNum;
+    int leafDataLength;
 };
 
 class InnerNode : public Node
 {
 public:
-    InnerNode();
+    InnerNode(int);
     virtual ~InnerNode();
     
     void insert(int keyIndex, int childIndex, KeyType key, Node * childNode);
@@ -75,7 +80,7 @@ public:
 class LeafNode : public Node
 {
 public:
-    LeafNode();
+    LeafNode(int);
     virtual ~LeafNode();
     
     void insert(KeyType key, const DataType & data);
@@ -102,7 +107,7 @@ struct SelectResult
 class BPlusTree
 {
 public:
-    BPlusTree();
+    BPlusTree(int);
     ~BPlusTree();
     
     bool insertValue(KeyType key, const DataType & data); // insert value into b+ tree
@@ -125,6 +130,7 @@ public:
     Node * m_root;
     LeafNode * m_dataHead;
     KeyType m_maxKey;
+    int leafDataLength;
 };
 
 class IndexManager
@@ -132,12 +138,13 @@ class IndexManager
 public:
     IndexManager();
     ~IndexManager();
+    
     bool createIndex(string indexName, string tableName, vector<string> attributes, bool isUnique = false);
     bool dropIndex(string indexName, string tableName);
 private:
     string tableName;
     string attributeName;
-    BufferManager * bm;
+//    BufferManager * bm;
 };
 
 #endif /* defined(__Database__IndexManager__) */
