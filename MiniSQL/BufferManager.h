@@ -33,7 +33,6 @@ class BufferBlock{
     
     BufferBlock(){initialize();}
     bool initialize();
-
 };
 
 class BufferManager{
