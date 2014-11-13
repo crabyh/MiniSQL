@@ -10,8 +10,6 @@
 #define __MiniSQL__CatalogManager__
 
 #include "PublicClass.h"
-#include <fstream>
-#include <iostream>
 
 class CatalogManager
 {

@@ -8,13 +8,8 @@
 
 #ifndef __MiniSQL_BufferManager__BufferManager__
 #define __MiniSQL_BufferManager__BufferManager__
-#define MAXBUFFERNUM 20 //BUFFER中的块数
-#define BLOCKSIZE 4096//在MAIN.H中定义？
 
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <math.h>
+#include "PublicClass.h"
 using namespace std;
 
 class BufferManager;
@@ -48,8 +43,8 @@ class BufferManager{
 public:
     BufferManager();
     ~BufferManager();
-    char* readData(string fileName, char* addr);
-    bool writeData(string fileName, long addr, const char* dataAddr, int recordSize, int recordNum);
+    char* readData(string fileName, FILEPTR addr);
+    bool writeData(string fileName, FILEPTR addr, const char* dataAddr, int recordSize, int recordNum);
 
     
 };

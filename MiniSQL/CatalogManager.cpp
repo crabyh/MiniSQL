@@ -20,8 +20,6 @@ CatalogManager::CatalogManager()
         Table* table = new Table;
         tableFile.read((char*)table,sizeof(Table));        //读取table
         table->attributes= *new vector <Attribute>;      //清空指针
-        table->data.clear();
-        table->emptyList.clear();
         for (int j = 0; j < table->attriNum; j++)
         {
             Attribute* attribute = new Attribute;

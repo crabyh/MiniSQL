@@ -124,10 +124,10 @@ int BufferManager::ifInBuffer(string fileName,int blockNum)
 }
 
 //供外部调用读取块!!!请勿跨块存取!!!
-char* BufferManager::readData(string fileName, char* addr)
+char* BufferManager::readData(string fileName, FILEPTR addr)
 {
-    int blockNum = (int) ((long)addr / BLOCKSIZE); //数据存在于file的第 blockNum+1 块内，从blockNum末尾开始读取
-    int blockOffset = (long)addr % BLOCKSIZE; //所需数据在块内的偏移量
+    int blockNum = (int) (addr / BLOCKSIZE); //数据存在于file的第 blockNum+1 块内，从blockNum末尾开始读取
+    int blockOffset = addr % BLOCKSIZE; //所需数据在块内的偏移量
     int blockNumInBuffer=ifInBuffer(fileName, blockNum);//block在buffer中的位置
     
     if(blockNumInBuffer != -1)//已经存在于buffer中

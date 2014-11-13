@@ -9,9 +9,6 @@
 #ifndef __MiniSQL__RecordManager__
 #define __MiniSQL__RecordManager__
 
-#include <stdio.h>
-#include <iostream>
-#include <string>
 #include "PublicClass.h"
 #include "BufferManager.h"
 
