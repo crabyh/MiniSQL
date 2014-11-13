@@ -49,7 +49,7 @@ public:
     BufferManager();
     ~BufferManager();
     char* readData(string fileName, char* addr);
-    bool writeData(string fileName, long addr, char* dataAddr, int recordSize, int recordNum);
+    bool writeData(string fileName, long addr, const char* dataAddr, int recordSize, int recordNum);
 
     
 };

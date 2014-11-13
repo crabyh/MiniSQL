@@ -12,7 +12,7 @@
 #include <vector>
 #include <string>
 using namespace std;
-enum type {INT=0, CHAR=1, STRING=2};
+enum type {INT, CHAR, STRING};
 enum CONDITION_TYPE {EQUAL, NOT_EQUAL, GREATER, GREATER_EQUAL, SMALLER, SMALLER_EQUAL, EXIST};
 
 class Conditions
@@ -66,8 +66,8 @@ public:
 
 class Data
 {
-    friend class Table;
-    vector<vector<string>> data;
+public:
+    vector<string> rows;
 };
 
 #endif

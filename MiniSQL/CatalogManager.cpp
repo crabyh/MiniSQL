@@ -178,14 +178,14 @@ int CatalogManager::getAttriNum(Table &table, string attriName){
     return -1;       //失败返回-1
 }
 
-int main(int argc, const char * argv[]) {
-    CatalogManager catalogmanager;
-    Table &table = catalogmanager.createTable("tablename","pk");
-    catalogmanager.insertAttri(table, "at", INT, 4);
-    catalogmanager.insertAttri(table, "pk", INT, 4, true, true);
-    catalogmanager.insertAttri(table, "pk2", STRING, 12);
-    return 0;
-}
+//int main(int argc, const char * argv[]) {
+//    CatalogManager catalogmanager;
+//    Table &table = catalogmanager.createTable("tablename","pk");
+//    catalogmanager.insertAttri(table, "at", INT, 4);
+//    catalogmanager.insertAttri(table, "pk", INT, 4, true, true);
+//    catalogmanager.insertAttri(table, "pk2", STRING, 12);
+//    return 0;
+//}
 
 
 

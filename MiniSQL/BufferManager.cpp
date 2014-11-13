@@ -143,7 +143,7 @@ char* BufferManager::readData(string fileName, char* addr)
 }
 
 //供外部调用写入块
-bool BufferManager::writeData(string fileName, long addr, char* dataAddr, int recordSize, int recordNum)
+bool BufferManager::writeData(string fileName, long addr, const char* dataAddr, int recordSize, int recordNum)
 {
     int blockNum = (int) ((long)addr / BLOCKSIZE); //数据存在于file的第 blockNum+1 块内，从blockNum末尾开始读取
     int blockOffset = (long)addr % BLOCKSIZE; //所需数据在块内的偏移量

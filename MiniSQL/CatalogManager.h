@@ -15,11 +15,10 @@
 
 class CatalogManager
 {
+public:
     vector<Table> Vtable;
     vector<Table>::iterator VtableIt;
     int tableNum;
-    
-public:
     CatalogManager();
     ~CatalogManager();
     Table &createTable(string name, string primarykey);
