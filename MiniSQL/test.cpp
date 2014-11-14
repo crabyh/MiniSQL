@@ -13,12 +13,15 @@ int main(){
     BufferManager buffermanager;
     CatalogManager catalogmanager;
     Table &table = catalogmanager.createTable("tablename","pk");
-    catalogmanager.insertAttri(table, "pk", INT, 22, true, true);
+    catalogmanager.insertAttri(table, "pk", CHAR, 22, true, true);
     RecordManager recordmanager(buffermanager,catalogmanager);
     table = catalogmanager.Vtable[0];
-    recordmanager.insertValues(catalogmanager.Vtable[0], 3425);
-    recordmanager.insertValues(catalogmanager.Vtable[0], 354);
-    recordmanager.insertValues(catalogmanager.Vtable[0], 321);
-    vector <Row> result = recordmanager.select(table, "pk", 321, EQUAL);
+    recordmanager.insertValues(catalogmanager.Vtable[0], "12345");
+    recordmanager.insertValues(catalogmanager.Vtable[0], "hello");
+    recordmanager.insertValues(catalogmanager.Vtable[0], "321");
+    vector <Row> result = recordmanager.select(table, "pk", "321", EQUAL);
+    int deleteNum = recordmanager.deleteRow(table, "pk", "hello", EQUAL);
+    result = recordmanager.select(table, "pk", "321", EQUAL);
+    result = recordmanager.select(table, "pk", "hello", EQUAL);
     return 0;
 }

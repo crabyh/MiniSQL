@@ -81,9 +81,9 @@ Table& CatalogManager::createTable(string name, string primarykey)
 //插入attribute
 bool CatalogManager::insertAttri(Table& table, string attriName, int type, int length, bool isPrimaryKey, bool isUnique)
 {
-    if(type == INT) length = 12;
-    else if(type == FLOAT) length = 41;
-    else if(type == CHAR) length += 1;
+    if(type == INT) length = 11;
+    else if(type == FLOAT) length = 40;
+    //else if(type == CHAR) length += 1;
     if(isPrimaryKey==1 && attriName!=table.primaryKey)
         return false;       //primarykey与table中的不对应
     if(getAttriNum(table, attriName)!=-1)
