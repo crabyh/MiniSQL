@@ -47,7 +47,7 @@ int BufferManager::getBufferToReplace()
             buffer[bufferNum].initialize();
             buffer[bufferNum].isValid = true;
             flashLRU(bufferNum);
-            cout<<bufferNum<<endl;
+            //cout<<bufferNum<<endl;
             return bufferNum;
         }
     //没有空块，使用LRU策略
@@ -75,7 +75,7 @@ bool BufferManager::readDataToBuffer(string fileName, int bufferNum, int blockNu
     in.open(fileName.data(),ios::in|ios::binary);
     if(!in.is_open())
     {
-        cout<<"Can not find the file !"<<endl;
+        //cout<<"Can not find the file !"<<endl;
     }
     in.seekp(blockNum*BLOCKSIZE, in.beg);
     in.read(buffer[bufferNum].values, BLOCKSIZE);
@@ -143,17 +143,17 @@ char* BufferManager::readData(string fileName, FILEPTR addr)
 }
 
 //供外部调用写入块
-bool BufferManager::writeData(string fileName, long addr, const char* dataAddr, int recordSize, int recordNum)
+bool BufferManager::writeData(string fileName, FILEPTR addr, const char* dataAddr, int recordSize, int recordNum)
 {
-    int blockNum = (int) ((long)addr / BLOCKSIZE); //数据存在于file的第 blockNum+1 块内，从blockNum末尾开始读取
-    int blockOffset = (long)addr % BLOCKSIZE; //所需数据在块内的偏移量
+    int blockNum = (int) (addr / BLOCKSIZE); //数据存在于file的第 blockNum+1 块内，从blockNum末尾开始读取
+    int blockOffset = addr % BLOCKSIZE; //所需数据在块内的偏移量
     
     while(recordNum>0)//还有数据没写入Buffer,一块一块写到buffer里
     {
         int recordToWrite=min(recordNum,(BLOCKSIZE-blockOffset)/recordSize);//当前块能插多少插多少
         recordNum -=recordToWrite;
+        if(recordNum > 0) blockOffset = 0;
         int size = recordToWrite * recordSize;
-        blockOffset=0;
         
         int blockNumInBuffer=ifInBuffer(fileName, blockNum);//block在buffer中的位置
         

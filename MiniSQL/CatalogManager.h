@@ -30,6 +30,7 @@ public:
     bool dropIndex(string indexName);
     bool deleteAttri(Table &table, string attriName);
     int getAttriNum(Table &table, string attriName);
+    int lengthBeforeAttri(Table &table, string attriName);
     
 };
 

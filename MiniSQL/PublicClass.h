@@ -11,16 +11,18 @@
 
 #include <vector>
 #include <string>
-#include <sstream>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <math.h>
 #include <stdio.h>
 #define MAXBUFFERNUM 20 //BUFFER中的块数
 #define BLOCKSIZE 4096//在MAIN.H中定义？
+#define INTSIZE 11
+#define FLOATSIZE 40
 #define FILEPTR long
 using namespace std;
-enum type {INT, CHAR, STRING};
+enum type {INT, CHAR, FLOAT};
 enum CONDITION_TYPE {EQUAL, NOT_EQUAL, GREATER, GREATER_EQUAL, SMALLER, SMALLER_EQUAL, EXIST};
 
 
@@ -33,15 +35,14 @@ public:
     string attributeValue;
 };
 
-class Data;
-
 class Attribute
 {
 public:
     friend class CatalogManager;
     friend class Table;
+    
     string name = "";
-    string indexName = "";      //index名
+    string indexName = "NULL";      //index名
     int type = INT;
     int length = 0;
     bool isPrimaryKey = false;
@@ -55,7 +56,7 @@ class Row
 {
 public:
     string value;
-    FILEPTR ptr;
+    FILEPTR ptr = -1;
 };
 
 class Table
@@ -70,9 +71,10 @@ public:
     int freeNum = 0;       //有几条被删除的记录
     vector<Attribute> attributes;       //指向元数据链表的指针
     vector<Attribute>::iterator AttriIt;     //Attribute的iterator
-    FILEPTR firstRow;     //指向数据链表的指针
-    long dataBlockInFile = -1;       //data开头在file中的块的位置（每张表的数据一定是从一块的开头开始）
-    FILEPTR freeList;        //指向等待删除链表的指针（这东西到底干吗用）
+    FILEPTR firstRow = -1;     //指向数据链表的指针
+    FILEPTR freeList = -1;        //指向等待删除链表的指针
+    FILEPTR fileEnd = 0;
+    FILEPTR curPtr = -1;
 
     Table(){}
     //带参数的初始化函数
@@ -91,7 +93,7 @@ inline string format(int num)
     return result;
 }
 
-inline string format(float num)
+inline string format(double num)
 {
     char c[100];
     string s;
@@ -100,5 +102,16 @@ inline string format(float num)
     return  s;
 }
 
+inline float toFloat(string s){
+    return ::atof(s.c_str());
+}
+
+inline int toInt(string s){
+    return ::atoi(s.c_str());
+}
+
+inline string trim(string s){
+    return s.substr(0,s.find(' '));
+}
 
 #endif
