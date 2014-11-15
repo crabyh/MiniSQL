@@ -12,7 +12,7 @@
 //初始化catalogmanager并从file中读取元数据
 CatalogManager::CatalogManager()
 {
-    fstream  tableFile("table", ios::in|ios::binary);
+    fstream  tableFile("Catalog", ios::in|ios::binary);
     tableFile >> tableNum;      //读取catalogmanager
     for ( int i = 0; i < tableNum ; i++)
     {
@@ -39,7 +39,7 @@ CatalogManager::CatalogManager()
 //将table的信息从容器中写入到文
 CatalogManager:: ~CatalogManager()
 {   //需要先清理freelist?!
-    fstream  tableFile( "table", ios::out|ios::binary|ios::app);
+    fstream  tableFile( "Catalog", ios::out|ios::binary|ios::app);
     tableFile << tableNum << " ";       //写入catalogmanager
     for (int i = 0; i < tableNum; i++)
     {//写入table

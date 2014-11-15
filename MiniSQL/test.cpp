@@ -21,7 +21,6 @@ int main(){
     recordmanager.insertValues(catalogmanager.Vtable[0], "321");
     vector <Row> result = recordmanager.select(table, "pk", "321", EQUAL);
     int deleteNum = recordmanager.deleteRow(table, "pk", "hello", EQUAL);
-    result = recordmanager.select(table, "pk", "321", EQUAL);
     result = recordmanager.select(table, "pk", "hello", EQUAL);
     return 0;
 }

@@ -35,13 +35,13 @@ bool RecordManager::insertValues(Table &table, string s){
         if(old_row.value != ""){
             old_row.ptr = table.fileEnd;
             cout<<table.attributes[curAttri].length<<" "<<old_row.ptr<<endl;
-            buffermanager.writeData("filename", table.fileEnd - sizeof(row.ptr), (char*)&old_row.ptr, sizeof(row.ptr), 1);
+            buffermanager.writeData(table.name+".table", table.fileEnd - sizeof(row.ptr), (char*)&old_row.ptr, sizeof(row.ptr), 1);
         }
         
         cout<<table.attributes[curAttri].length<<" "<<row.ptr<<endl;
-        buffermanager.writeData("filename", table.fileEnd, row.value.c_str(), table.attributes[curAttri].length, 1);
+        buffermanager.writeData(table.name+".table", table.fileEnd, row.value.c_str(), table.attributes[curAttri].length, 1);
         table.fileEnd += table.attributes[curAttri].length;
-        buffermanager.writeData("filename", table.fileEnd, (char*)&row.ptr, sizeof(row.ptr), 1);
+        buffermanager.writeData(table.name+".table", table.fileEnd, (char*)&row.ptr, sizeof(row.ptr), 1);
         table.fileEnd += sizeof(row.ptr);
         old_row = row;
         row.value.clear();
@@ -68,14 +68,13 @@ Row RecordManager::nextRecord(Table &table){
     if(table.curPtr == -1) table.curPtr = table.firstRow;
     if(table.curPtr%BLOCKSIZE + table.eachRecordLength > BLOCKSIZE)
         table.curPtr = BLOCKSIZE*(table.curPtr/BLOCKSIZE+1);
-    char* chptr=buffermanager.readData("filename", table.curPtr);
+    char* chptr=buffermanager.readData(table.name+".table", table.curPtr);
     for(int i=0;i<table.eachRecordLength;i++){
         row.value+=chptr[i];
     }
-    cout<<row.value;
 //    memcpy(&row.value, chptr, table.eachRecordLength);
     table.curPtr += table.eachRecordLength;
-    memcpy(&row.ptr, buffermanager.readData("filename", table.curPtr), sizeof(row.ptr));
+    memcpy(&row.ptr, buffermanager.readData(table.name+".table", table.curPtr), sizeof(row.ptr));
     table.curPtr = row.ptr;
     return row;
 }
@@ -238,21 +237,35 @@ vector<Row> RecordManager::select(Table &table, vector<Row> &rows, string attriN
 
 int RecordManager::deleteRow(Table &table, string attriName, string condition,int CONDITION_TYPE){
     int delete_num = 0;
-    Row old_row;
-    Row row;
+    Row old_row, row;
+    FILEPTR old_ptr = -1, ptr = 0;
     string data;
     for(int i=0;i<table.recordNum;i++){
-        row = nextRecord(table);
+        //row=nextRecord(table)
+        if(table.curPtr == -1) table.curPtr = table.firstRow;
+        if(table.curPtr%BLOCKSIZE + table.eachRecordLength > BLOCKSIZE)
+            table.curPtr = BLOCKSIZE*(table.curPtr/BLOCKSIZE+1);
+        ptr = table.curPtr;
+        char* chptr=buffermanager.readData(table.name+".table", table.curPtr);
+        for(int i=0;i<table.eachRecordLength;i++){
+            row.value+=chptr[i];
+        }
+        //    memcpy(&row.value, chptr, table.eachRecordLength);
+        table.curPtr += table.eachRecordLength;
+        memcpy(&row.ptr, buffermanager.readData(table.name+".table", table.curPtr), sizeof(row.ptr));
+        table.curPtr = row.ptr;
+        
         data = attriInRecord(table, row, attriName);
         data = trim(data);
+        cout<<data<<endl<<condition<<endl;
         if(compare(data,condition,CONDITION_TYPE) == true){
-            if(old_row.ptr != 0){  //正常情况
-                FILEPTR rowToDelete = old_row.ptr;
+            if(old_ptr != -1){  //正常情况
                 FILEPTR freeList = table.freeList;
                 table.freeList = old_row.ptr;
                 old_row.ptr = row.ptr;
                 row.ptr = freeList;
-                buffermanager.writeData();
+                buffermanager.writeData(table.name+".table", old_ptr+table.eachRecordLength, old_row.value.c_str(), sizeof(row.ptr), 1);
+                buffermanager.writeData(table.name+".table", ptr+table.eachRecordLength, row.value.c_str(), sizeof(row.ptr), 1);
             }
             else if(old_row.ptr == 0){      //删除第一条记录
                 FILEPTR ptrToFistRow = table.firstRow;
@@ -260,8 +273,11 @@ int RecordManager::deleteRow(Table &table, string attriName, string condition,in
                 row.ptr = table.freeList;
                 table.freeList = ptrToFistRow;
             }
-            delete_num++;
+            delete_num++;  
         }
+        old_row = row;
+        old_ptr = ptr;
+        row.value.clear();
     }
     return delete_num;
 }
