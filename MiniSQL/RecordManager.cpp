@@ -34,11 +34,11 @@ bool RecordManager::insertValues(Table &table, string s){
         //更新上一条记录的指针
         if(old_row.value != ""){
             old_row.ptr = table.fileEnd;
-            cout<<table.attributes[curAttri].length<<" "<<old_row.ptr<<endl;
+//            cout<<table.attributes[curAttri].length<<" "<<old_row.ptr<<endl;
             buffermanager.writeData(table.name+".table", table.fileEnd - sizeof(row.ptr), (char*)&old_row.ptr, sizeof(row.ptr), 1);
         }
         
-        cout<<table.attributes[curAttri].length<<" "<<row.ptr<<endl;
+//        cout<<table.attributes[curAttri].length<<" "<<row.ptr<<endl;
         buffermanager.writeData(table.name+".table", table.fileEnd, row.value.c_str(), table.attributes[curAttri].length, 1);
         table.fileEnd += table.attributes[curAttri].length;
         buffermanager.writeData(table.name+".table", table.fileEnd, (char*)&row.ptr, sizeof(row.ptr), 1);
@@ -261,7 +261,7 @@ int RecordManager::deleteRow(Table &table, string attriName, string condition,in
         
         data = attriInRecord(table, row, attriName);
         data = trim(data);
-        cout<<data<<endl<<condition<<endl;
+//        cout<<data<<endl<<condition<<endl;
         if(compare(data,condition,CONDITION_TYPE) == true){
             if(old_ptr != -1){  //正常情况
                 FILEPTR freeList = table.freeList;
@@ -285,6 +285,103 @@ int RecordManager::deleteRow(Table &table, string attriName, string condition,in
     }
     return delete_num;
 }
+//重载
+int RecordManager::deleteRow(Table &table, string attriName, int condition,int CONDITION_TYPE){
+    int delete_num = 0;
+    Row old_row, row;
+    FILEPTR old_ptr = -1, ptr = 0;
+    string data;
+    int num;
+    for(int i=0;i<table.recordNum;i++){
+        //row=nextRecord(table)
+        if(table.curPtr == -1) table.curPtr = table.firstRow;
+        if(table.curPtr%BLOCKSIZE + table.eachRecordLength > BLOCKSIZE)
+            table.curPtr = BLOCKSIZE*(table.curPtr/BLOCKSIZE+1);
+        ptr = table.curPtr;
+        char* chptr=buffermanager.readData(table.name+".table", table.curPtr);
+        for(int i=0;i<table.eachRecordLength;i++){
+            row.value+=chptr[i];
+        }
+        //    memcpy(&row.value, chptr, table.eachRecordLength);
+        table.curPtr += table.eachRecordLength;
+        memcpy(&row.ptr, buffermanager.readData(table.name+".table", table.curPtr), sizeof(row.ptr));
+        table.curPtr = row.ptr;
+        
+        data = attriInRecord(table, row, attriName);
+        num = toInt(data);
+//        cout<<data<<endl<<condition<<endl;
+        if(compare(num,condition,CONDITION_TYPE) == true){
+            if(old_ptr != -1){  //正常情况
+                FILEPTR freeList = table.freeList;
+                table.freeList = old_row.ptr;
+                old_row.ptr = row.ptr;
+                row.ptr = freeList;
+                buffermanager.writeData(table.name+".table", old_ptr+table.eachRecordLength, old_row.value.c_str(), sizeof(row.ptr), 1);
+                buffermanager.writeData(table.name+".table", ptr+table.eachRecordLength, row.value.c_str(), sizeof(row.ptr), 1);
+            }
+            else{      //删除第一条记录
+                FILEPTR ptrToFistRow = table.firstRow;
+                table.firstRow = row.ptr;
+                row.ptr = table.freeList;
+                table.freeList = ptrToFistRow;
+            }
+            delete_num++;
+        }
+        old_row = row;
+        old_ptr = ptr;
+        row.value.clear();
+    }
+    return delete_num;
+}
+//重载
+int RecordManager::deleteRow(Table &table, string attriName, double condition,int CONDITION_TYPE){
+    int delete_num = 0;
+    Row old_row, row;
+    FILEPTR old_ptr = -1, ptr = 0;
+    string data;
+    double f;
+    for(int i=0;i<table.recordNum;i++){
+        //row=nextRecord(table)
+        if(table.curPtr == -1) table.curPtr = table.firstRow;
+        if(table.curPtr%BLOCKSIZE + table.eachRecordLength > BLOCKSIZE)
+            table.curPtr = BLOCKSIZE*(table.curPtr/BLOCKSIZE+1);
+        ptr = table.curPtr;
+        char* chptr=buffermanager.readData(table.name+".table", table.curPtr);
+        for(int i=0;i<table.eachRecordLength;i++){
+            row.value+=chptr[i];
+        }
+        //    memcpy(&row.value, chptr, table.eachRecordLength);
+        table.curPtr += table.eachRecordLength;
+        memcpy(&row.ptr, buffermanager.readData(table.name+".table", table.curPtr), sizeof(row.ptr));
+        table.curPtr = row.ptr;
+        
+        data = attriInRecord(table, row, attriName);
+        f = toFloat(data);
+//        cout<<data<<endl<<condition<<endl;
+        if(compare(f,condition,CONDITION_TYPE) == true){
+            if(old_ptr != -1){  //正常情况
+                FILEPTR freeList = table.freeList;
+                table.freeList = old_row.ptr;
+                old_row.ptr = row.ptr;
+                row.ptr = freeList;
+                buffermanager.writeData(table.name+".table", old_ptr+table.eachRecordLength, old_row.value.c_str(), sizeof(row.ptr), 1);
+                buffermanager.writeData(table.name+".table", ptr+table.eachRecordLength, row.value.c_str(), sizeof(row.ptr), 1);
+            }
+            else{      //删除第一条记录
+                FILEPTR ptrToFistRow = table.firstRow;
+                table.firstRow = row.ptr;
+                row.ptr = table.freeList;
+                table.freeList = ptrToFistRow;
+            }
+            delete_num++;
+        }
+        old_row = row;
+        old_ptr = ptr;
+        row.value.clear();
+    }
+    return delete_num;
+}
+
 
 
 
