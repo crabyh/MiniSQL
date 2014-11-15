@@ -7,9 +7,9 @@
 //
 
 #include "RecordManager.h"
-
-
 using namespace std;
+
+//插入record中的一个属性，当此属性为record中的最后一个属性时，生成一条记录
 bool RecordManager::insertValues(Table &table, string s){
     static int curAttri = 0;
     static Row& row = *new Row;
@@ -51,6 +51,7 @@ bool RecordManager::insertValues(Table &table, string s){
     return false;
 }
 
+//重载insertValues
 bool RecordManager::insertValues(Table &table, int num){
     string data = format(num);
     return insertValues(table, data);
@@ -62,7 +63,7 @@ bool RecordManager::insertValues(Table &table, double f){
 }
 
 
-//查看下一条记录
+//返回下一条记录
 Row RecordManager::nextRecord(Table &table){
     Row &row = *new Row;
     if(table.curPtr == -1) table.curPtr = table.firstRow;
@@ -87,6 +88,7 @@ string RecordManager::attriInRecord(Table &table, Row &row, string attriName){
     return s;
 }
 
+//比较函数
 bool RecordManager::compare(string s, string condition, int CONDITION_TYPE){
     switch (CONDITION_TYPE){
         case EQUAL:
@@ -105,7 +107,7 @@ bool RecordManager::compare(string s, string condition, int CONDITION_TYPE){
             return false;
     }
 }
-
+//重载比较函数
 bool RecordManager::compare(int s, int condition, int CONDITION_TYPE){
     switch (CONDITION_TYPE){
         case EQUAL:
@@ -124,7 +126,7 @@ bool RecordManager::compare(int s, int condition, int CONDITION_TYPE){
             return false;
     }
 }
-
+//重载比较函数
 bool RecordManager::compare(double s, double condition, int CONDITION_TYPE){
     switch (CONDITION_TYPE){
         case EQUAL:
@@ -144,6 +146,7 @@ bool RecordManager::compare(double s, double condition, int CONDITION_TYPE){
     }
 }
 
+//查询函数，返回所有符合条件的记录
 vector<Row> RecordManager::select(Table &table, string attriName, string condition, int CONDITION_TYPE){
     vector<Row> result;
     Row row;
@@ -158,7 +161,7 @@ vector<Row> RecordManager::select(Table &table, string attriName, string conditi
     }
     return result;
 }
-
+//重载查询函数
 vector<Row> RecordManager::select(Table &table, string attriName, int condition, int CONDITION_TYPE){
     vector<Row> result;
     Row row;
@@ -173,7 +176,7 @@ vector<Row> RecordManager::select(Table &table, string attriName, int condition,
     }
     return result;
 }
-
+//重载查询函数
 vector<Row> RecordManager::select(Table &table, string attriName, double condition, int CONDITION_TYPE){
     vector<Row> result;
     Row row;
@@ -204,7 +207,7 @@ vector<Row> RecordManager::select(Table &table, vector<Row> &rows, string attriN
     }
     return result;
 }
-
+//重载
 vector<Row> RecordManager::select(Table &table, vector<Row> &rows, string attriName, int condition, int CONDITION_TYPE){
     vector<Row> result;
     Row row;
@@ -219,7 +222,7 @@ vector<Row> RecordManager::select(Table &table, vector<Row> &rows, string attriN
     }
     return result;
 }
-
+//重载
 vector<Row> RecordManager::select(Table &table, vector<Row> &rows, string attriName, double condition, int CONDITION_TYPE){
     vector<Row> result;
     Row row;
@@ -235,6 +238,7 @@ vector<Row> RecordManager::select(Table &table, vector<Row> &rows, string attriN
     return result;
 }
 
+//删除所有符合条件的记录，返回删除的个数
 int RecordManager::deleteRow(Table &table, string attriName, string condition,int CONDITION_TYPE){
     int delete_num = 0;
     Row old_row, row;
@@ -267,7 +271,7 @@ int RecordManager::deleteRow(Table &table, string attriName, string condition,in
                 buffermanager.writeData(table.name+".table", old_ptr+table.eachRecordLength, old_row.value.c_str(), sizeof(row.ptr), 1);
                 buffermanager.writeData(table.name+".table", ptr+table.eachRecordLength, row.value.c_str(), sizeof(row.ptr), 1);
             }
-            else if(old_row.ptr == 0){      //删除第一条记录
+            else{      //删除第一条记录
                 FILEPTR ptrToFistRow = table.firstRow;
                 table.firstRow = row.ptr;
                 row.ptr = table.freeList;

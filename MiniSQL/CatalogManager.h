@@ -14,11 +14,11 @@
 class CatalogManager
 {
 public:
+    BufferManager &buffermanager;
     vector<Table> Vtable;
     vector<Table>::iterator VtableIt;
     int tableNum;
-    CatalogManager();
-    ~CatalogManager();
+    CatalogManager(BufferManager &buffermanager);
     Table &createTable(string name, string primarykey);
     bool insertAttri(Table& table, string attriName, int type, int length, bool isPrimaryKey=false, bool isUnique=false);
     bool initiaTable(Table& table);
@@ -31,7 +31,7 @@ public:
     bool deleteAttri(Table &table, string attriName);
     int getAttriNum(Table &table, string attriName);
     int lengthBeforeAttri(Table &table, string attriName);
-    
+    ~CatalogManager();
 };
 
 #endif /* defined(__MiniSQL__CatalogManager__) */

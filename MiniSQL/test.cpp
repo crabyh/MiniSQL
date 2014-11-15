@@ -11,7 +11,7 @@
 #include "CatalogManager.h"
 int main(){
     BufferManager buffermanager;
-    CatalogManager catalogmanager;
+    CatalogManager catalogmanager(buffermanager);
     Table &table = catalogmanager.createTable("tablename","pk");
     catalogmanager.insertAttri(table, "pk", CHAR, 22, true, true);
     RecordManager recordmanager(buffermanager,catalogmanager);
@@ -20,7 +20,7 @@ int main(){
     recordmanager.insertValues(catalogmanager.Vtable[0], "hello");
     recordmanager.insertValues(catalogmanager.Vtable[0], "321");
     vector <Row> result = recordmanager.select(table, "pk", "321", EQUAL);
-    int deleteNum = recordmanager.deleteRow(table, "pk", "hello", EQUAL);
-    result = recordmanager.select(table, "pk", "hello", EQUAL);
+    int deleteNum = recordmanager.deleteRow(table, "pk", "12345", EQUAL);
+    result = recordmanager.select(table, "pk", "12345", EQUAL);
     return 0;
 }

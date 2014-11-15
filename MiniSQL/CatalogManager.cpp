@@ -6,11 +6,12 @@
 //  Copyright (c) 2014 Myh. All rights reserved.
 //
 
+#include "BufferManager.h"
 #include "CatalogManager.h"
 #include "PublicClass.h"
 
 //初始化catalogmanager并从file中读取元数据
-CatalogManager::CatalogManager()
+CatalogManager::CatalogManager(BufferManager &buffermanager):buffermanager(buffermanager)
 {
     fstream  tableFile("Catalog", ios::in|ios::binary);
     tableFile >> tableNum;      //读取catalogmanager
@@ -149,20 +150,23 @@ int CatalogManager::findIndexAttri(string indexName)
     return -1;      //没有查询到Index
 }
 
-//删除table，同时删除table上的index和指向的data（我需要一个recordmanager的函数！）
+//删除table，同时删除table上的index和指向的data
 bool CatalogManager::dropTable(string tableName)
 {
     for(int i=0;i<Vtable.size();i++)
         if(Vtable[i].name==tableName)
         {
             Vtable.erase(Vtable.begin()+i);
-            tableNum--;
+            string filename = tableName+".table";
+            remove(filename.c_str());       //删除文件
+            buffermanager.dropTableInBuffer(tableName);     //删除buffer中的数据
+            tableNum--;     //更新tableNum
             return true;        //成功返回true
         }
     return false;       //失败返回false
 }
 
-//删除index
+//删除index,供index调用
 bool CatalogManager::dropIndex(string indexName)
 {
     for(int i=0;i<Vtable.size();i++)

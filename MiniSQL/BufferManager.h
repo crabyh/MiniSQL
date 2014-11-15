@@ -43,6 +43,7 @@ class BufferManager{
 public:
     BufferManager();
     ~BufferManager();
+    bool dropTableInBuffer(string tableName);
     char* readData(string fileName, FILEPTR addr);
     bool writeData(string fileName, FILEPTR addr, const char* dataAddr, int recordSize, int recordNum);
 

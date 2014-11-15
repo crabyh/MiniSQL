@@ -176,6 +176,19 @@ bool BufferManager::writeData(string fileName, FILEPTR addr, const char* dataAdd
     return true;
 }
 
+//供catalogmanager调用删除buffer中有关数据
+bool BufferManager::dropTableInBuffer(string tableName)
+{
+    for(int i=0;i<MAXBUFFERNUM;i++)
+    {
+        if(buffer[i].fileName == tableName+".tablename")
+        {
+            buffer[i].initialize();
+        }
+    }
+    return true;
+}
+
 //int main(int argc, const char * argv[]) {
 //    BufferManager m;
 //    string s="HelloWorld";
