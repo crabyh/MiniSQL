@@ -29,7 +29,6 @@ int Node::getKeyIndex(KeyType key) // use binary search to find key
     {
         current = (left + right) / 2;
         KeyType currentKey = m_keyValues[current];
-//        if (GREATER == compare(key, currentKey)) // compare currentKey with key
         if (key > currentKey)
         {
             left = current + 1;
@@ -55,6 +54,7 @@ InnerNode::InnerNode(int leafDataLength)
     maxKeyValueNum = maxLeafDataNum;
     maxChildNum = maxKeyValueNum + 1;
     minChildNum = minKeyValueNum + 1;
+    m_keyValues.resize(maxKeyValueNum);
 }
 
 InnerNode::~InnerNode()
@@ -75,17 +75,21 @@ void InnerNode::split(Node * parent, int childIndex)
 {
     InnerNode * newNode = new InnerNode(parent->leafDataLength);
     newNode->m_nodeType = INNER; // set new node's type
-    newNode->m_keyNum = MINIMUM_KEY;
-    for (int i = 0; i < MINIMUM_KEY; ++i)  // copy the second half of the keys to the new node
+    newNode->m_keyNum = minKeyValueNum;
+    newNode->selfBlockNum = BPlusTree::blockCounter++;
+    newNode->parentBlockNum = parent->selfBlockNum;
+    for (int i = 0; i < minKeyValueNum; ++i)  // copy the second half of the keys to the new node
     {
-        newNode->m_keyValues[i] = m_keyValues[i + MINIMUM_KEY];
+        newNode->m_keyValues[i] = m_keyValues[i + minKeyValueNum];
     }
-    for (int i = 0; i < MINIMUM_CHILD; ++i) // copy the second half of the children to the new node
+    for (int i = 0; i < minChildNum; ++i) // copy the second half of the children to the new node
     {
-        newNode->m_children.push_back(m_children[i + MINIMUM_CHILD]);
+        newNode->m_children.push_back(m_children[i + minChildNum]);
+        newNode->childrenBLockNums.push_back(m_children[i + minChildNum]->selfBlockNum);
+        m_children[i + minChildNum]->parentBlockNum = newNode->selfBlockNum;
     }
-    m_keyNum = MINIMUM_KEY; // reset the key number of the old node
-    ((InnerNode *) parent)->insert(childIndex, childIndex + 1, m_keyValues[MINIMUM_KEY], newNode); // insert new node to the tree
+    m_keyNum = minKeyValueNum; // reset the key number of the old node
+    ((InnerNode *) parent)->insert(childIndex, childIndex + 1, m_keyValues[minKeyValueNum], newNode); // insert new node to the tree
 }
 
 // insert key after keyIndex and childNode afater childIndex
@@ -111,15 +115,21 @@ void InnerNode::insert(int keyIndex, int childIndex, KeyType key, Node *childNod
 void InnerNode::mergeChild(Node *parentNode, Node *childNode, int keyIndex)
 {
     // insert the first key and child of the second node into the first node
-    insert(MINIMUM_KEY, MINIMUM_KEY + 1, parentNode->m_keyValues[keyIndex], ((InnerNode*)childNode)->m_children[0]);
+    insert(minKeyValueNum, minKeyValueNum + 1, parentNode->m_keyValues[keyIndex], ((InnerNode*)childNode)->m_children[0]);
     // insert next keys and children
     for (int i = 1; i < childNode->m_keyNum; ++i)
     {
-        insert(MINIMUM_KEY + i, MINIMUM_KEY + i + 1, childNode->m_keyValues[i - 1], ((InnerNode *)childNode)->m_children[i]);
+        insert(minKeyValueNum + i, minKeyValueNum + i + 1, childNode->m_keyValues[i - 1], ((InnerNode *)childNode)->m_children[i]);
     }
     // remove the key and child in parent node
     parentNode->removeKey(keyIndex, keyIndex + 1);
-    delete ((InnerNode *)parentNode)->m_children[keyIndex + 1];
+//    delete ((InnerNode *)parentNode)->m_children[keyIndex + 1];
+    for (vector<int>::iterator iter = parentNode->childrenBLockNums.begin(); iter != parentNode->childrenBLockNums.end(); iter++)
+    {
+        if (*iter == childNode->selfBlockNum) {
+            parentNode->childrenBLockNums.erase(iter);
+        }
+    } // remove the child's block num
 }
 
 void InnerNode::removeKey(int keyIndex, int childIndex)
@@ -174,6 +184,17 @@ LeafNode::LeafNode(int leafDataLength) : Node()
     m_nodeType = LEAF;
     m_leftSibling = NULL;
     m_rightSibling = NULL;
+    this->leafDataLength = leafDataLength;
+    // a tree node is 4096 bytes and comprises n keyvalues and n+1 recordPointers (which is int)
+    // thus leafDataLength * n + 4*(n+1) = 4096
+    maxLeafDataNum = (4096 - 4) / (this->leafDataLength + 4);
+    minLeafDataNum = ceil(maxLeafDataNum / 2);
+    minKeyValueNum = minLeafDataNum;
+    maxKeyValueNum = maxLeafDataNum;
+    maxChildNum = maxKeyValueNum + 1;
+    minChildNum = minKeyValueNum + 1;
+    m_keyValues.resize(maxKeyValueNum);
+    m_data.resize(maxLeafDataNum);
 }
 
 LeafNode::~LeafNode()
@@ -188,14 +209,12 @@ void LeafNode::clear()
 void LeafNode::insert(KeyType key, const DataType & data)
 {
     int i;
-//    for (i = m_keyNum; i >= 1 && GREATER == compare(m_keyValues[i - 1], key); --i)
     for (i = m_keyNum; i >= 1 && m_keyValues[i - 1] > key; --i)
     {
         m_keyValues[i] = m_keyValues[i - 1];
         m_data[i] = m_data[i - 1];
     }
-//    this->m_data[i] = data;
-    this->m_data.push_back(data);
+    this->m_data[i] = data;
     this->m_keyValues[i] = key;
     this->m_keyNum++;
 }
@@ -204,20 +223,23 @@ void LeafNode::split(Node *parentNode, int childIndex)
 {
     LeafNode *newLeafNode = new LeafNode(parentNode->leafDataLength);
     // set attributes of new node and old node
-    this->m_keyNum = MINIMUM_LEAF;
-    newLeafNode->m_keyNum = MINIMUM_LEAF + 1;
+    this->m_keyNum = minLeafDataNum;
+    newLeafNode->m_keyNum = minLeafDataNum + 1;
     newLeafNode->m_rightSibling = this->m_rightSibling;
     newLeafNode->m_leftSibling = this;
+    newLeafNode->selfBlockNum = BPlusTree::blockCounter++;
+    newLeafNode->parentBlockNum = parentNode->selfBlockNum;
+    parentNode->childrenBLockNums.push_back(newLeafNode->selfBlockNum);
     this->m_rightSibling = newLeafNode;
-    for (int i = 0; i < MINIMUM_LEAF + 1; ++i) // copy key values
+    for (int i = 0; i < minLeafDataNum + 1; ++i) // copy key values
     {
-        newLeafNode->m_keyValues[i] = m_keyValues[i + MINIMUM_LEAF];
+        newLeafNode->m_keyValues[i] = m_keyValues[i + minLeafDataNum];
     }
-    for (int i = 0; i < MINIMUM_LEAF + 1; ++i) // copy data
+    for (int i = 0; i < minLeafDataNum + 1; ++i) // copy data
     {
-        newLeafNode->m_data[i] = m_data[i + MINIMUM_LEAF];
+        newLeafNode->m_data[i] = m_data[i + minLeafDataNum];
     }
-    ((InnerNode *)parentNode)->insert(childIndex, childIndex + 1, m_keyValues[MINIMUM_LEAF], newLeafNode);
+    ((InnerNode *)parentNode)->insert(childIndex, childIndex + 1, m_keyValues[minLeafDataNum], newLeafNode);
 }
 
 void LeafNode::mergeChild(Node *parentNode, Node *childNode, int keyIndex) // insert values of right sibling into this node
@@ -227,6 +249,13 @@ void LeafNode::mergeChild(Node *parentNode, Node *childNode, int keyIndex) // in
         insert(childNode->m_keyValues[i], ((LeafNode *)childNode)->m_data[i]);
     }
     this->m_rightSibling = ((LeafNode *)childNode)->m_rightSibling;
+    parentNode->removeKey(keyIndex, keyIndex+1);
+    for (vector<int>::iterator iter = parentNode->childrenBLockNums.begin(); iter != parentNode->childrenBLockNums.end(); iter++)
+    {
+        if (*iter == childNode->selfBlockNum) {
+            parentNode->childrenBLockNums.erase(iter);
+        }
+    } // remove the child's block num
 }
 
 void LeafNode::removeKey(int keyIdex, int childIndex) // remove key and data
@@ -269,6 +298,8 @@ BPlusTree::BPlusTree(int leafDataLength)
     this->leafDataLength = leafDataLength;
 }
 
+int BPlusTree::blockCounter = 0;
+
 BPlusTree::~BPlusTree()
 {
     clear();
@@ -283,12 +314,20 @@ bool BPlusTree::insertValue(KeyType key, const DataType & data)
     if (NULL == m_root) // there is no root
     {
         m_root = new LeafNode(leafDataLength);
+        m_root->selfBlockNum = blockCounter;
+        m_root->parentBlockNum = -1;
+        m_root->childrenBLockNums.clear();
+        blockCounter++;
         m_dataHead = (LeafNode *)m_root;
         m_maxKey = key;
     }
-    if (m_root->m_keyNum >= MAXIMUM_KEY) // root is full
+    if (m_root->m_keyNum >= m_root->maxKeyValueNum) // root is full
     {
         InnerNode * newNode = new InnerNode(leafDataLength);
+        newNode->selfBlockNum = blockCounter;
+        newNode->parentBlockNum = -1;
+        newNode->childrenBLockNums.push_back(m_root->selfBlockNum);
+        blockCounter++;
         newNode->m_children[0] = m_root;
         m_root->split(newNode, 0);
         m_root = newNode;
@@ -312,7 +351,7 @@ void BPlusTree::recursive_insert(Node * parentNode, KeyType key, const DataType 
         int keyIndex = parentNode->getKeyIndex(key);
         int childIndex = parentNode->getChildIndex(key, keyIndex);
         Node * childNode = ((InnerNode *)parentNode)->m_children[childIndex];
-        if (childNode->m_keyNum >= MAXIMUM_LEAF)
+        if (childNode->m_keyNum >= childNode->maxLeafDataNum)
         {
             childNode->split(parentNode, childIndex);
             if (parentNode->m_keyValues[childIndex] >= key)
@@ -360,6 +399,204 @@ bool BPlusTree::recursive_search(Node *pNode, KeyType key) const
     }
 }
 
+Node * BPlusTree::findNodeFor(KeyType key)
+{
+    return recursive_findNodeFor(m_root, key);
+}
+
+Node * BPlusTree::recursive_findNodeFor(Node * node, KeyType key)
+{
+    int keyIndex = m_root->getKeyIndex(key);
+    int childIndex = m_root->getChildIndex(key, keyIndex);
+    if (keyIndex < m_root->m_keyNum && key == m_root->m_keyValues[keyIndex])
+    {
+        return ((InnerNode *)m_root)->m_children[childIndex];
+    }
+    else return recursive_findNodeFor(((InnerNode *)m_root)->m_children[childIndex], key);
+}
+
+nodeData BPlusTree::findNodeData(KeyType key)
+{
+    return recursive_findNodeData(m_root, key);
+}
+// find record pointer correspoding to the key
+nodeData BPlusTree::recursive_findNodeData(Node * pNode, KeyType key)
+{
+//    if (NULL == pNode)
+//        return ;
+//    else
+//    {
+        int keyIndex = pNode->getKeyIndex(key);
+        int childIndex = pNode->getChildIndex(key, keyIndex);
+        nodeData invalid;
+        invalid.isValid = false;
+    
+        if (keyIndex < pNode->m_keyNum && key == pNode->m_keyValues[keyIndex])
+            return ((LeafNode *)pNode)->m_data[keyIndex];
+        else
+        {
+            if (LEAF == pNode->m_nodeType)
+                return invalid;
+            else
+                return recursive_findNodeData(((InnerNode *)pNode)->m_children[childIndex], key);
+        }
+//    }
+}
+
+vector<nodeData> BPlusTree::findRangeNodeData(Node * pNode, KeyType key, CONDITION_TYPE condType)
+{
+    int keyindex = pNode->getKeyIndex(key);
+    int childIndex = pNode->getChildIndex(key, keyindex);
+    nodeData end;
+    vector<nodeData> results;
+    if (keyindex < pNode->m_keyNum && key == pNode->m_keyValues[keyindex]) // find the key
+    {
+        switch (condType) {
+            case SMALLER:
+            {
+                LeafNode * iter = m_dataHead;
+                for (; iter->selfBlockNum < pNode->selfBlockNum; iter++) {
+                    for (int i = 0; i < iter->m_keyNum; ++i)
+                    {
+                        results.push_back(((LeafNode *)pNode)->m_data[i]);
+                    }
+                }
+                for (int i = 0 ; i < keyindex; ++i) {
+                    results.push_back(iter->m_data[i]); //push_back rest dataNode of this block
+                }
+                break;
+            }
+            case SMALLER_EQUAL:
+            {
+                LeafNode * iter = m_dataHead;
+                for (; iter->selfBlockNum < pNode->selfBlockNum; iter++) {
+                    for (int i = 0; i < iter->m_keyNum; ++i)
+                    {
+                        results.push_back(((LeafNode *)pNode)->m_data[i]);
+                    }
+                }
+                for (int i = 0 ; i <= keyindex; ++i) {
+                    results.push_back(iter->m_data[i]); //push_back rest dataNode of this block
+                }
+                break;
+            }
+            case GREATER:
+            {
+                LeafNode * iter = m_dataHead;
+                while (iter->selfBlockNum < pNode->selfBlockNum) {
+                    iter++;
+                }  // skip to the block which contains the key
+                for (int i = iter->m_keyNum ; i > keyindex; --i) {
+                    results.push_back(((LeafNode *)pNode)->m_data[i]);
+                } // push_back rest value of this block
+                while (iter != NULL) { // push_back rest blocks' values
+                    for (int i = 0; i > iter->m_keyNum; ++i)
+                    {
+                        results.push_back(iter->m_data[i]);
+                    }
+                }
+                break;
+            }
+            case GREATER_EQUAL:
+            {
+                LeafNode * iter = m_dataHead;
+                while (iter->selfBlockNum < pNode->selfBlockNum) {
+                    iter++;
+                }  // skip to the block which contains the key
+                for (int i = iter->m_keyNum ; i >= keyindex; --i) {
+                    results.push_back(((LeafNode *)pNode)->m_data[i]);
+                } // push_back rest value of this block
+                while (iter != NULL) { // push_back rest blocks' values
+                    for (int i = 0; i > iter->m_keyNum; ++i)
+                    {
+                        results.push_back(iter->m_data[i]);
+                    }
+                }
+                break;
+            }
+            case NOT_EQUAL:
+            {
+                LeafNode * iter = m_dataHead;
+                while (iter != NULL) //traverse every block
+                {
+                    for (int i = 0; i < iter->m_keyNum; )
+                    { //traverse in the block
+                        if (iter == pNode && i == keyindex)
+                        {
+                            break;
+                        }
+                        results.push_back(iter->m_data[i]);
+                    }
+                }
+            }
+            default:
+                break;
+        }
+    }
+    else // key is not found
+    {
+        if (pNode->m_nodeType != LEAF) // find in its children
+        {
+            return findRangeNodeData(((InnerNode *)pNode)->m_children[childIndex], key, condType);
+        }
+        else
+        {
+            switch (condType) {
+                case SMALLER:
+                case SMALLER_EQUAL:
+                {
+                    LeafNode * iter = m_dataHead;
+                    for (; iter->selfBlockNum < pNode->selfBlockNum; iter++) {
+                        for (int i = 0; i < iter->m_keyNum; ++i)
+                        {
+                            results.push_back(((LeafNode *)pNode)->m_data[i]);
+                        }
+                    }
+                    for (int i = 0 ; i < keyindex; ++i) {
+                        results.push_back(iter->m_data[i]); //push_back rest dataNode of this block
+                    }
+                    break;
+                }
+                case GREATER:
+                case GREATER_EQUAL:
+                {
+                    LeafNode * iter = m_dataHead;
+                    while (iter->selfBlockNum < pNode->selfBlockNum) {
+                        iter++;
+                    }  // skip to the block which contains the key
+                    for (int i = iter->m_keyNum ; i > keyindex; --i) {
+                        results.push_back(((LeafNode *)pNode)->m_data[i]);
+                    } // push_back rest value of this block
+                    while (iter != NULL) { // push_back rest blocks' values
+                        for (int i = 0; i > iter->m_keyNum; ++i)
+                        {
+                            results.push_back(iter->m_data[i]);
+                        }
+                    }
+                    break;
+                }
+                case NOT_EQUAL:
+                {
+                    LeafNode * iter = m_dataHead;
+                    while (iter != NULL) //traverse every block
+                    {
+                        for (int i = 0; i < iter->m_keyNum; )
+                        { //traverse in the block
+                            if (iter == pNode && i == keyindex)
+                            {
+                                break;
+                            }
+                            results.push_back(iter->m_data[i]);
+                        }
+                    }
+                }
+                default:
+                    break;
+            }
+        }
+    }
+    return results;
+}
 bool BPlusTree::deleteValue(KeyType key)
 {
     if (!search(key))
@@ -377,7 +614,8 @@ bool BPlusTree::deleteValue(KeyType key)
         {
             Node * childNode1 = ((InnerNode *)m_root)->m_children[0];
             Node * childNode2 = ((InnerNode *)m_root)->m_children[1];
-            if (childNode1->m_keyNum == MINIMUM_KEY && MINIMUM_KEY == childNode2->m_keyNum)
+            if (childNode1->m_keyNum == childNode1->minKeyValueNum
+                && childNode2->minKeyValueNum == childNode2->m_keyNum)
             {
                 childNode1->mergeChild(m_root, childNode2, 0);
                 delete m_root;
@@ -408,15 +646,15 @@ void BPlusTree::recursive_remove(Node * parentNode, KeyType key)
     else
     {
         Node *pChildNode = ((InnerNode *)parentNode)->m_children[childIndex];
-        if (pChildNode->m_keyNum == MINIMUM_KEY) // when its keynumber is going to be less than minimum key number
+        if (pChildNode->m_keyNum == pChildNode->minKeyValueNum) // when its keynumber is going to be less than minimum key number
         {
             Node *pLeft = childIndex > 0 ? ((InnerNode *)parentNode)->m_children[childIndex - 1] : NULL;
             Node *pRight = childIndex < parentNode->m_keyNum ? ((InnerNode *)parentNode)->m_children[childIndex + 1] : NULL;
-            if (pLeft && pLeft->m_keyNum > MINIMUM_KEY)
+            if (pLeft && pLeft->m_keyNum >  pLeft->minKeyValueNum)
             {
                 pChildNode->borrowFrom(pLeft, parentNode, childIndex - 1, LEFT);
             }
-            else if (pRight && pRight->m_keyNum > MINIMUM_KEY)
+            else if (pRight && pRight->m_keyNum > pRight->minKeyValueNum)
             {
                 pChildNode->borrowFrom(pRight, parentNode, childIndex + 1, RIGHT);
             }
@@ -460,7 +698,7 @@ bool BPlusTree::updateValue(KeyType oldKey, KeyType newKey)
     {
         DataType dataValue;
         remove(oldKey, dataValue);
-        if (INVALID_INDEX == dataValue)
+        if (false == dataValue.isValid)
         {
             return false;
         }
@@ -475,7 +713,7 @@ void BPlusTree::remove(KeyType key, DataType & dataValue)
 {
     if (!search(key))
     {
-        dataValue = INVALID_INDEX;
+        dataValue.isValid = false;
     }
     if (1 == m_root->m_keyNum)
     {
@@ -489,7 +727,7 @@ void BPlusTree::remove(KeyType key, DataType & dataValue)
         {
             Node *pChild1 = ((InnerNode *)m_root)->m_children[0];
             Node *pChild2 = ((InnerNode *)m_root)->m_children[1];
-            if (MINIMUM_KEY == pChild1->m_keyNum && MINIMUM_KEY == pChild2->m_keyNum)
+            if (pChild1->minKeyValueNum == pChild1->m_keyNum && pChild2->minKeyValueNum == pChild2->m_keyNum)
             {
                 pChild1->mergeChild(m_root, pChild2, 0);
                 delete m_root;
@@ -520,15 +758,15 @@ void BPlusTree::recursive_remove(Node * parentNode, KeyType key, DataType & data
     else
     {
         Node *pChildNode = ((InnerNode *)parentNode)->m_children[childIndex];
-        if (pChildNode->m_keyNum == MINIMUM_KEY) // when its keynumber is going to be less than minimum key number
+        if (pChildNode->m_keyNum == pChildNode->minKeyValueNum) // when its keynumber is going to be less than minimum key number
         {
             Node *pLeft = childIndex > 0 ? ((InnerNode *)parentNode)->m_children[childIndex - 1] : NULL;
             Node *pRight = childIndex < parentNode->m_keyNum ? ((InnerNode *)parentNode)->m_children[childIndex + 1] : NULL;
-            if (pLeft && pLeft->m_keyNum > MINIMUM_KEY)
+            if (pLeft && pLeft->m_keyNum > pLeft->minKeyValueNum)
             {
                 pChildNode->borrowFrom(pLeft, parentNode, childIndex - 1, LEFT);
             }
-            else if (pRight && pRight->m_keyNum > MINIMUM_KEY)
+            else if (pRight && pRight->m_keyNum > pRight->minKeyValueNum)
             {
                 pChildNode->borrowFrom(pRight, parentNode, childIndex + 1, RIGHT);
             }
@@ -545,6 +783,234 @@ void BPlusTree::recursive_remove(Node * parentNode, KeyType key, DataType & data
         recursive_remove(pChildNode, key, dataValue);
     }
 }
+
+void BPlusTree::printData() const
+{
+    LeafNode* itr = m_dataHead;
+    while(itr!=NULL)
+    {
+        for (int i=0; i < itr->m_keyNum; ++i)
+        {
+            cout<< itr->m_data[i].recordValue <<" ";
+        }
+        cout<<endl;
+        itr = itr->m_rightSibling;
+    }
+}
+
+IndexManager::IndexManager(BufferManager &bm, CatalogManager &cm, RecordManager &rm): bm(bm), cm(cm), rm(rm)
+{
+    indexSet.clear();
+}
+
+IndexManager::~IndexManager()
+{
+}
+
+// recursively traverse the tree and transfer the blocks
+void IndexManager::traverse(Node * node, string fileName)
+{
+    for (int i = 0; i < ((InnerNode *)node)->m_children.size(); ++i)
+    {
+        if (((InnerNode *)node)->m_children[i]->m_nodeType != LEAF)
+        {
+            traverse(((InnerNode *)node)->m_children[i], fileName);
+        }
+        bm.writeData(fileName,
+                      node->selfBlockNum * sizeof(*node),
+                      (char*)((InnerNode *)node)->m_children[i],
+                      sizeof(*(((InnerNode *)node)->m_children[i])),
+                      1);
+        ((InnerNode *)node)->m_children[i]->parentBlockNum = node->selfBlockNum; //set the block number to parent's block number
+        node->childrenBLockNums.push_back(((InnerNode *)node)->m_children[i]->selfBlockNum);
+    }
+    // write self 
+    bm.writeData(fileName,
+                  node->selfBlockNum * sizeof(*node),
+                  (char*)node,
+                  sizeof(*node),
+                  1);
+}
+
+// push all record values which are correspoding to attribute into the vector attributeValues
+vector<nodeData> IndexManager::findAttributeValues(string attribute, Table &table, string filename)
+{
+    int attributeNum = cm.getAttriNum(table, attribute);
+    int size = 0, i = 0;
+    for (table.AttriIt = table.attributes.begin(); i < attributeNum; table.AttriIt++, i++)
+    {
+        size += sizeof(*table.AttriIt);
+    }
+    vector<nodeData> attributeValues;
+    for (int i = 0; i < table.attriNum; i++)
+    {
+        nodeData newNodeData;
+        // table.eachRecordLength equals to the length of all attributes
+        // thus i * length represents ith row, 1 * length represents length of all attributes
+        newNodeData.recordValue = bm.readData(filename, (table.eachRecordLength + 8) * i + size);
+        newNodeData.blockNum = table.blockNum + ((table.eachRecordLength + 8) * i + size) / BLOCKSIZE;
+        newNodeData.blockOffset = ((table.eachRecordLength + 8) * i + size) % BLOCKSIZE;
+        newNodeData.isValid = true;
+        newNodeData.indexName = table.name + "-" + attribute; // indexName is named after this convention
+        newNodeData.tableName = table.name;
+        attributeValues.push_back(newNodeData);
+    }
+    return attributeValues;
+}
+
+//---------------Public API------------------
+// create index indexName on table(attributeName)
+// maxLength is the maximum length of this attibute
+bool IndexManager::createIndex(string indexName, Table &table, string attributeName, int maxLength)
+{
+    string filename = indexName + ".idx";
+    fstream fout;
+    fout.open(filename, ios::app);
+    if (indexSet.find(indexName) == indexSet.end()) // do not find the index, create a new one
+    {
+        // maxLength is equal to the length of this attribute which is set when creating table
+        BPlusTree * newtree = new BPlusTree(maxLength);
+        btreeSet.insert(newtree);
+        vector<nodeData> attributeValues = findAttributeValues(attributeName, table, table.name + ".table"); // find record values corresponding to the attributeName
+        for (int i = 0; i < attributeValues.size(); ++i)
+        {
+            newtree->insertValue(attributeValues[i].recordValue, attributeValues[i]); // insert record and its pointer into leaves
+        }
+        traverse((*--btreeSet.end())->m_root, filename); // transfer each block in the tree into the file
+        cm.createIndex(indexName, table.name, attributeName);
+        indexSet.insert(indexName);
+        return true;
+    }
+    else
+    {
+        cout << "Index already exists" << endl;
+        return false;
+    }
+}
+
+bool IndexManager::dropIndex(string indexName, string tableName)
+{
+    if (cm.findIndexTable(indexName) != -1) // index exists
+//    if (indexSet.find(indexName) != indexSet.end())
+    {
+        if (indexSet.find(indexName) != indexSet.end()) indexSet.erase(indexName); // remove index in the indexset
+        cm.dropIndex(indexName); // remove relative info in cm
+        string f = indexName + ".idx";
+        const char * filename = f.c_str();
+        remove(filename); // delete index file
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+// record select operation
+nodeData IndexManager::findEqualRecord(Attribute attribute, string attributeValue, Table & table)
+{
+    nodeData filePointer;
+    BPlusTree * btree = new BPlusTree(attribute.length);
+    vector<nodeData> attributeValues = findAttributeValues(attribute.name, table, table.name + ".table");
+    for (int i = 0; i < attributeValues.size(); ++i)
+    {
+        btree->insertValue(attributeValues[i].recordValue, attributeValues[i]); // insert record and its pointer into leaves
+    }
+    filePointer = btree->findNodeData(attributeValue);
+    return filePointer; // start pointer of continuous field
+}
+
+vector<Row> IndexManager::findRangeRecord(Attribute attri, string attriValue, Table & table, CONDITION_TYPE condType)
+{
+    vector<Row> results;
+    vector<nodeData> filePointers;
+    BPlusTree * btree = new BPlusTree(attri.length);
+    vector<nodeData> attriValues = findAttributeValues(attri.name, table, table.name + ".table");
+    for (int i = 0; i < attriValues.size(); ++i)
+    {
+        btree->insertValue(attriValues[i].recordValue, attriValues[i]);
+    }
+    filePointers = btree->findRangeNodeData(btree->m_root, attriValue, condType); // find nodeData correspoding to required conditions
+    vector<nodeData>::iterator iter = filePointers.begin();
+    for (; iter != filePointers.end(); iter++)
+    {
+        char * a = bm.readData(table.name + ".table",  (long)((*iter).blockNum * BLOCKSIZE + (*iter).blockOffset)); //read data in file
+        Row row;
+        for (int i = 0; i < table.eachRecordLength; ++i)
+        {
+            row.value += a[i];
+        }
+        results.push_back(row);
+    }
+    return results;
+}
+
+void IndexManager::afterInsert(Attribute & attribute, string attributeValue, Table & table, FILEPTR addr)
+{
+    BPlusTree * btree = new BPlusTree(attribute.length);
+    nodeData recordPtr = transferAddrToNodeData(attribute, table, addr);
+    vector<nodeData> attributeValues = findAttributeValues(attribute.name, table, table.name + ".table");
+    for (int i = 0; i < attributeValues.size(); ++i)
+    {
+        btree->insertValue(attributeValues[i].recordValue, attributeValues[i]); // insert record and its pointer into leaves
+    }
+    if (!btree->search(attributeValue))  // if attributeValue is not stored
+    {
+        btree->insertValue(attributeValue, recordPtr);
+    }
+    traverse(btree->m_root, attribute.indexName + ".idx");
+}
+
+void IndexManager::afterDelete(Attribute & attribute, string attributeValue, Table & table, FILEPTR addr)
+{
+    BPlusTree * btree = new BPlusTree(attribute.length);
+    nodeData recordPtr = transferAddrToNodeData(attribute, table, addr);
+    vector<nodeData> attributeValues = findAttributeValues(attribute.name, table, table.name + ".table");
+    for (int i = 0; i < attributeValues.size(); ++i)
+    {
+        btree->insertValue(attributeValues[i].recordValue, attributeValues[i]); // insert record and its pointer into leaves
+    }
+    btree->remove(attributeValue, recordPtr);
+    traverse(btree->m_root, attribute.indexName + ".idx");
+}
+
+void IndexManager::afterUpdate(Attribute & attribute, string attributeValue, Table & table, FILEPTR addr)
+{
+    BPlusTree * btree = new BPlusTree(attribute.length);
+    nodeData recordPtr = transferAddrToNodeData(attribute, table, addr);
+    vector<nodeData> attributeValues = findAttributeValues(attribute.name, table, table.name + ".table");
+    for (int i = 0; i < attributeValues.size(); ++i)
+    {
+        btree->insertValue(attributeValues[i].recordValue, attributeValues[i]); // insert record and its pointer into leaves
+    }
+    Node * oldNode = btree->findNodeFor(attributeValue);
+    btree->changeKey(oldNode, recordPtr.recordValue, attributeValue);
+}
+
+nodeData IndexManager::transferAddrToNodeData(Attribute &attri, Table &table, FILEPTR addr)
+{
+    nodeData recordPtr;
+    recordPtr.blockNum = addr / BLOCKSIZE;
+    recordPtr.blockOffset = addr % BLOCKSIZE;
+    recordPtr.indexName = attri.indexName;
+    recordPtr.tableName = table.name;
+    recordPtr.isValid = true;
+    return recordPtr;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
