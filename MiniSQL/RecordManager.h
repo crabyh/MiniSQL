@@ -18,10 +18,11 @@ class RecordManager{
     CatalogManager &catalogmanager;
 public:
     RecordManager(BufferManager &buffermanager, CatalogManager &catalogmanager):buffermanager(buffermanager), catalogmanager(catalogmanager){}
-    bool insertValues(Table &table, string s);
-    bool insertValues(Table &table, int  num);
-    bool insertValues(Table &table, double f);
+    FILEPTR insertValues(Table &table, string s);
+    FILEPTR insertValues(Table &table, int  num);
+    FILEPTR insertValues(Table &table, double f);
     Row nextRecord(Table &table);
+    Row findRecord(Table &table, FILEPTR addr);
     
     bool compare(string s, string condition, int CONDITION_TYPE);
     bool compare(int s, int condition, int CONDITION_TYPE);

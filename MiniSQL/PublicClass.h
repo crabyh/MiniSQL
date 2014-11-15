@@ -23,7 +23,7 @@
 #define FILEPTR long
 using namespace std;
 enum type {INT, CHAR, FLOAT};
-enum CONDITION_TYPE {EQUAL, NOT_EQUAL, GREATER, GREATER_EQUAL, SMALLER, SMALLER_EQUAL, EXIST};
+enum CONDITION_TYPE {EQUAL, NOT_EQUAL, GREATER, GREATER_EQUAL, SMALLER, SMALLER_EQUAL, ALL,EXIST};
 
 
 
@@ -73,9 +73,11 @@ public:
     vector<Attribute>::iterator AttriIt;     //Attribute的iterator
     FILEPTR firstRow = -1;     //指向数据链表的指针
     FILEPTR freeList = -1;        //指向等待删除链表的指针
-    FILEPTR fileEnd = 0;
-    FILEPTR curPtr = -1;
-
+    FILEPTR fileEnd = 0;        //文件结尾
+    FILEPTR curPtr = -1;        //nextRecord的指针
+    FILEPTR freeListEndPTR = -1;       //fressList最后一个record的地址
+    FILEPTR dataEndPTR = -1;        //record最后一条的地址
+    
     Table(){}
     //带参数的初始化函数
     Table(string name, string primaryKey)

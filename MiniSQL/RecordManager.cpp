@@ -10,58 +10,101 @@
 using namespace std;
 
 //插入record中的一个属性，当此属性为record中的最后一个属性时，生成一条记录
-bool RecordManager::insertValues(Table &table, string s){
+FILEPTR RecordManager::insertValues(Table &table, string s){
     static int curAttri = 0;
-    static Row& row = *new Row;
-    static Row& old_row = *new Row;
-    if(table.attributes[curAttri].type == CHAR){
+    static Row row;
+    static Row old_row;
+    
+    if(table.dataEndPTR != -1)      //上一条记录有的话存在old_row里
+        old_row = findRecord(table, table.dataEndPTR);
+    
+    if(table.attributes[curAttri].type == CHAR)
         s.resize(table.attributes[curAttri].length, ' ');
-    }
-    if(table.fileEnd%BLOCKSIZE + table.eachRecordLength > BLOCKSIZE)
-        table.fileEnd = BLOCKSIZE*(table.fileEnd/BLOCKSIZE+1);
+    
     if(curAttri != table.attriNum){
         row.value+=s;
         curAttri++;
     }
+    
     if(curAttri == table.attriNum){
-        curAttri = 0;
-        //检测是否为第一条记录
-        if(table.firstRow == -1){
-            //table.eachRecordLength = sizeof(row);
-            table.firstRow = 0;
+        curAttri = 0;       //重置计数器
+        
+        if(table.firstRow == -1) table.firstRow = 0;        //检测是否为第一条记录
+        
+        //插入一整条记录
+        if(table.freeList == -1){       //freelist为空插入到文件尾
+            
+            //更新上一条记录的指针
+            if(old_row.value != ""){
+                old_row.ptr = table.fileEnd;
+                buffermanager.writeData(table.name+".table", table.dataEndPTR+table.eachRecordLength, (char*)&old_row.ptr, sizeof(row.ptr), 1);
+            }
+            
+            //防止跨块读取
+            if(table.fileEnd%BLOCKSIZE + table.eachRecordLength > BLOCKSIZE)
+                table.fileEnd = BLOCKSIZE*(table.fileEnd/BLOCKSIZE+1);
+            
+            buffermanager.writeData(table.name+".table", table.fileEnd, row.value.c_str(), table.eachRecordLength, 1);
+            table.fileEnd += table.eachRecordLength;
+            
+            buffermanager.writeData(table.name+".table", table.fileEnd, (char*)&row.ptr, sizeof(row.ptr), 1);
+            table.fileEnd += sizeof(row.ptr);
+            
+            old_row = row;
+            row.value.clear();
+            table.recordNum++;
+            table.dataEndPTR = table.fileEnd-table.eachRecordLength-8;
+            return table.dataEndPTR;
         }
         
-        //更新上一条记录的指针
-        if(old_row.value != ""){
-            old_row.ptr = table.fileEnd;
-//            cout<<table.attributes[curAttri].length<<" "<<old_row.ptr<<endl;
-            buffermanager.writeData(table.name+".table", table.fileEnd - sizeof(row.ptr), (char*)&old_row.ptr, sizeof(row.ptr), 1);
+        else{       //插入到freelist里
+            FILEPTR curPtr = table.freeList;
+            if(old_row.value != ""){    //插入之前有数据
+                old_row.ptr = curPtr;
+                buffermanager.writeData(table.name+".table", table.dataEndPTR+table.eachRecordLength, (char*)&old_row.ptr, sizeof(row.ptr), 1);
+            }
+            else{   //插入的是第一条数据
+                table.firstRow = curPtr;
+            }
+            
+            table.freeList = findRecord(table, curPtr).ptr;
+            
+            buffermanager.writeData(table.name+".table", curPtr, row.value.c_str(), table.eachRecordLength, 1);
+            buffermanager.writeData(table.name+".table", curPtr+table.eachRecordLength, (char*)&row.ptr, 8, 1);
+            old_row = row;
+            table.dataEndPTR = curPtr;
+            table.recordNum++;
+            row.value.clear();
+            return table.dataEndPTR;
         }
         
-//        cout<<table.attributes[curAttri].length<<" "<<row.ptr<<endl;
-        buffermanager.writeData(table.name+".table", table.fileEnd, row.value.c_str(), table.attributes[curAttri].length, 1);
-        table.fileEnd += table.attributes[curAttri].length;
-        buffermanager.writeData(table.name+".table", table.fileEnd, (char*)&row.ptr, sizeof(row.ptr), 1);
-        table.fileEnd += sizeof(row.ptr);
-        old_row = row;
-        row.value.clear();
-        table.recordNum++;
-        return true;
     }
     return false;
 }
 
 //重载insertValues
-bool RecordManager::insertValues(Table &table, int num){
+FILEPTR RecordManager::insertValues(Table &table, int num){
     string data = format(num);
     return insertValues(table, data);
 }
 
-bool RecordManager::insertValues(Table &table, double f){
+FILEPTR RecordManager::insertValues(Table &table, double f){
     string data = format(f);
     return insertValues(table, data);
 }
 
+//返回该地址的记录
+Row RecordManager::findRecord(Table &table, FILEPTR addr){
+    Row &row = *new Row;
+    if(addr%BLOCKSIZE + table.eachRecordLength > BLOCKSIZE)
+        addr = BLOCKSIZE*(table.curPtr/BLOCKSIZE+1);
+    char* chptr=buffermanager.readData(table.name+".table", addr);
+    for(int i=0;i<table.eachRecordLength;i++){
+        row.value+=chptr[i];
+    }
+    memcpy(&row.ptr, buffermanager.readData(table.name+".table", addr+table.eachRecordLength), sizeof(row.ptr));
+    return row;
+}
 
 //返回下一条记录
 Row RecordManager::nextRecord(Table &table){
@@ -103,6 +146,8 @@ bool RecordManager::compare(string s, string condition, int CONDITION_TYPE){
             return s < condition;
         case SMALLER_EQUAL:
             return s <= condition;
+        case ALL:
+            return true;
         default:
             return false;
     }
@@ -122,6 +167,8 @@ bool RecordManager::compare(int s, int condition, int CONDITION_TYPE){
             return s < condition;
         case SMALLER_EQUAL:
             return s <= condition;
+        case ALL:
+            return true;
         default:
             return false;
     }
@@ -141,6 +188,8 @@ bool RecordManager::compare(double s, double condition, int CONDITION_TYPE){
             return s < condition;
         case SMALLER_EQUAL:
             return s <= condition;
+        case ALL:
+            return true;
         default:
             return false;
     }
@@ -268,14 +317,15 @@ int RecordManager::deleteRow(Table &table, string attriName, string condition,in
                 table.freeList = old_row.ptr;
                 old_row.ptr = row.ptr;
                 row.ptr = freeList;
-                buffermanager.writeData(table.name+".table", old_ptr+table.eachRecordLength, old_row.value.c_str(), sizeof(row.ptr), 1);
-                buffermanager.writeData(table.name+".table", ptr+table.eachRecordLength, row.value.c_str(), sizeof(row.ptr), 1);
+                buffermanager.writeData(table.name+".table", old_ptr+table.eachRecordLength, (char*)&old_row.ptr, sizeof(row.ptr), 1);
+                buffermanager.writeData(table.name+".table", ptr+table.eachRecordLength, (char*)&row.ptr, sizeof(row.ptr), 1);
             }
             else{      //删除第一条记录
                 FILEPTR ptrToFistRow = table.firstRow;
                 table.firstRow = row.ptr;
                 row.ptr = table.freeList;
                 table.freeList = ptrToFistRow;
+                buffermanager.writeData(table.name+".table", ptr+table.eachRecordLength, (char*)&row.ptr, sizeof(row.ptr), 1);
             }
             delete_num++;  
         }
@@ -283,6 +333,7 @@ int RecordManager::deleteRow(Table &table, string attriName, string condition,in
         old_ptr = ptr;
         row.value.clear();
     }
+    table.recordNum -= delete_num;
     return delete_num;
 }
 //重载
@@ -316,21 +367,22 @@ int RecordManager::deleteRow(Table &table, string attriName, int condition,int C
                 table.freeList = old_row.ptr;
                 old_row.ptr = row.ptr;
                 row.ptr = freeList;
-                buffermanager.writeData(table.name+".table", old_ptr+table.eachRecordLength, old_row.value.c_str(), sizeof(row.ptr), 1);
-                buffermanager.writeData(table.name+".table", ptr+table.eachRecordLength, row.value.c_str(), sizeof(row.ptr), 1);
+                buffermanager.writeData(table.name+".table", old_ptr+table.eachRecordLength, (char*)&old_row.ptr, sizeof(row.ptr), 1);
+                buffermanager.writeData(table.name+".table", ptr+table.eachRecordLength, (char*)&row.ptr, sizeof(row.ptr), 1);
             }
             else{      //删除第一条记录
                 FILEPTR ptrToFistRow = table.firstRow;
                 table.firstRow = row.ptr;
                 row.ptr = table.freeList;
                 table.freeList = ptrToFistRow;
-            }
-            delete_num++;
+                buffermanager.writeData(table.name+".table", ptr+table.eachRecordLength, (char*)&row.ptr, sizeof(row.ptr), 1);
+            }            delete_num++;
         }
         old_row = row;
         old_ptr = ptr;
         row.value.clear();
     }
+    table.recordNum -= delete_num;
     return delete_num;
 }
 //重载
@@ -364,14 +416,15 @@ int RecordManager::deleteRow(Table &table, string attriName, double condition,in
                 table.freeList = old_row.ptr;
                 old_row.ptr = row.ptr;
                 row.ptr = freeList;
-                buffermanager.writeData(table.name+".table", old_ptr+table.eachRecordLength, old_row.value.c_str(), sizeof(row.ptr), 1);
-                buffermanager.writeData(table.name+".table", ptr+table.eachRecordLength, row.value.c_str(), sizeof(row.ptr), 1);
+                buffermanager.writeData(table.name+".table", old_ptr+table.eachRecordLength, (char*)&old_row.ptr, sizeof(row.ptr), 1);
+                buffermanager.writeData(table.name+".table", ptr+table.eachRecordLength, (char*)&row.ptr, sizeof(row.ptr), 1);
             }
             else{      //删除第一条记录
                 FILEPTR ptrToFistRow = table.firstRow;
                 table.firstRow = row.ptr;
                 row.ptr = table.freeList;
                 table.freeList = ptrToFistRow;
+                buffermanager.writeData(table.name+".table", ptr+table.eachRecordLength, (char*)&row.ptr, sizeof(row.ptr), 1);
             }
             delete_num++;
         }
@@ -379,6 +432,7 @@ int RecordManager::deleteRow(Table &table, string attriName, double condition,in
         old_ptr = ptr;
         row.value.clear();
     }
+    table.recordNum -= delete_num;
     return delete_num;
 }
 
