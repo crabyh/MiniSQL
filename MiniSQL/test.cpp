@@ -19,7 +19,7 @@ int main(){
     recordmanager.insertValues(catalogmanager.Vtable[0], "0");
     recordmanager.insertValues(catalogmanager.Vtable[0], "1");
     recordmanager.insertValues(catalogmanager.Vtable[0], "2");
-    int deleteNum = recordmanager.deleteRow(table, "pk", "0", EQUAL);
+    int deleteNum = recordmanager.deleteRow(table, "pk", "0", ALL);
     vector <Row> result = recordmanager.select(table, "pk", 1, ALL);
     recordmanager.insertValues(catalogmanager.Vtable[0], "later");
     result = recordmanager.select(table, "pk", "later", ALL);

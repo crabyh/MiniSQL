@@ -241,6 +241,16 @@ vector<Row> RecordManager::select(Table &table, string attriName, double conditi
     return result;
 }
 
+vector<Row> RecordManager::selectAll(Table &table){
+    vector<Row> result;
+    Row row;
+    for(int i=0;i<table.recordNum;i++){
+        row = nextRecord(table);
+        result.push_back(row);
+    }
+    return result;
+}
+
 //从筛选结果中继续筛选 用于and连接操作
 vector<Row> RecordManager::select(Table &table, vector<Row> &rows, string attriName, string condition, int CONDITION_TYPE){
     vector<Row> result;
@@ -432,6 +442,49 @@ int RecordManager::deleteRow(Table &table, string attriName, double condition,in
         old_ptr = ptr;
         row.value.clear();
     }
+    table.recordNum -= delete_num;
+    return delete_num;
+}
+
+int RecordManager::deleteAllRow(Table &table){
+    int delete_num = 0;
+    Row old_row, row;
+    FILEPTR old_ptr = -1, ptr = 0;
+    for(int i=0;i<table.recordNum;i++){
+        //row=nextRecord(table)
+        if(table.curPtr == -1) table.curPtr = table.firstRow;
+        if(table.curPtr%BLOCKSIZE + table.eachRecordLength > BLOCKSIZE)
+            table.curPtr = BLOCKSIZE*(table.curPtr/BLOCKSIZE+1);
+        ptr = table.curPtr;
+        char* chptr=buffermanager.readData(table.name+".table", table.curPtr);
+        for(int i=0;i<table.eachRecordLength;i++){
+            row.value+=chptr[i];
+        }
+        //    memcpy(&row.value, chptr, table.eachRecordLength);
+        table.curPtr += table.eachRecordLength;
+        memcpy(&row.ptr, buffermanager.readData(table.name+".table", table.curPtr), sizeof(row.ptr));
+        table.curPtr = row.ptr;
+        
+        if(old_ptr != -1){  //正常情况
+            FILEPTR freeList = table.freeList;
+            table.freeList = old_row.ptr;
+            old_row.ptr = row.ptr;
+            row.ptr = freeList;
+            buffermanager.writeData(table.name+".table", old_ptr+table.eachRecordLength, (char*)&old_row.ptr, sizeof(row.ptr), 1);
+            buffermanager.writeData(table.name+".table", ptr+table.eachRecordLength, (char*)&row.ptr, sizeof(row.ptr), 1);
+        }
+        else{      //删除第一条记录
+            FILEPTR ptrToFistRow = table.firstRow;
+            table.firstRow = row.ptr;
+            row.ptr = table.freeList;
+            table.freeList = ptrToFistRow;
+            buffermanager.writeData(table.name+".table", ptr+table.eachRecordLength, (char*)&row.ptr, sizeof(row.ptr), 1);
+        }
+        delete_num++;
+    }
+    old_row = row;
+    old_ptr = ptr;
+    row.value.clear();
     table.recordNum -= delete_num;
     return delete_num;
 }

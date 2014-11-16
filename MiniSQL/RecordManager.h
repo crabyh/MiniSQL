@@ -31,6 +31,7 @@ public:
     vector<Row> select(Table &table, string attriName, string condition,int CONDITION_TYPE);
     vector<Row> select(Table &table, string attriName, int condition,int CONDITION_TYPE);
     vector<Row> select(Table &table, string attriName, double condition,int CONDITION_TYPE);
+    vector<Row> selectAll(Table &table);
     
     vector<Row> select(Table &table, vector<Row> &rows, string attriName, string condition,int CONDITION_TYPE);
     vector<Row> select(Table &table, vector<Row> &rows, string attriName, int condition,int CONDITION_TYPE);
@@ -42,6 +43,8 @@ public:
     int deleteRow(Table &table, string attriName, string condition,int CONDITION_TYPE);
     int deleteRow(Table &table, string attriName, int condition,int CONDITION_TYPE);
     int deleteRow(Table &table, string attriName, double condition,int CONDITION_TYPE);
+    int deleteAllRow(Table &table);
+    
 };
 
 #endif /* defined(__MiniSQL__RecordManager__) */

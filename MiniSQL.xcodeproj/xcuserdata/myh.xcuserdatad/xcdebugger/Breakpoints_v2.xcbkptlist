@@ -490,9 +490,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "300"
-            endingLineNumber = "300"
-            landmarkName = "RecordManager::deleteRow(Table &amp;table, string attriName, string condition,int CONDITION_TYPE)"
-            landmarkType = "5">
+            endingLineNumber = "300">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -507,7 +505,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "297"
             endingLineNumber = "297"
-            landmarkName = "RecordManager::deleteRow(Table &amp;table, string attriName, string condition,int CONDITION_TYPE)"
+            landmarkName = "RecordManager::select(Table &amp;table, vector&lt;Row&gt; &amp;rows, string attriName, double condition, int CONDITION_TYPE)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -619,7 +617,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "296"
             endingLineNumber = "296"
-            landmarkName = "RecordManager::deleteRow(Table &amp;table, string attriName, string condition,int CONDITION_TYPE)"
+            landmarkName = "RecordManager::select(Table &amp;table, vector&lt;Row&gt; &amp;rows, string attriName, double condition, int CONDITION_TYPE)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -674,7 +672,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MiniSQL/RecordManager.cpp"
