@@ -49,6 +49,16 @@ bool APIManager:: existIndexAttr(string tableName, string attriName)
     return false;
 }
 
+bool APIManager:: exsitAttrTable(string tableName, string attriName)
+{
+    int taleIndex = catalogmanager.findTable(tableName);
+    for(int i = 0; i < catalogmanager.Vtable[taleIndex].attriNum; ++i)
+    {
+        if(catalogmanager.Vtable[i].attributes[i].name == attriName)
+            return true;
+    }
+    return false;
+}
 
 bool APIManager:: isUnique(string tableName, string attriName)
 {
@@ -67,14 +77,15 @@ Table & APIManager:: creatTable(Table &table)
     Table & tempTable = catalogmanager.createTable(table.name, table.primaryKey);
     for(size_t i = 0; i < table.attributes.size(); ++i)
     {
-        catalogmanager.insertAttri(tempTable, table.attributes[i].name, table.attributes[i].type, table.attributes[i].length);
-        if (table.primaryKey == table.attributes[i].name) // if attribute is primary key 
+        catalogmanager.insertAttri(tempTable, table.attributes[i].name, table.attributes[i].type, table.attributes[i].length, table.attributes[i].isPrimaryKey, table.attributes[i].isUnique);
+        /*if (table.primaryKey == table.attributes[i].name) // if attribute is primary key
         {
-            table.attributes[i].isPrimaryKey = true;
-            table.attributes[i].isUnique = true;
-        }
-    }
-    
+            (catalogmanager.Vtable.back()).attributes[i].isPrimaryKey = true;
+            (catalogmanager.Vtable.back()).attributes[i].isUnique = true;
+        }*/
+        
+
+    }    
     return catalogmanager.Vtable.back();
 }
 
@@ -122,6 +133,13 @@ int APIManager:: deleteValue(string tablename)
 {
     int tableIndex = catalogmanager.findTable(tablename);
     int total = recordmanager.deleteAllRow(catalogmanager.Vtable[tableIndex]);
+   /* for(int i = 0; i < catalogmanager.Vtable[tableIndex].attriNum; ++i)
+    {
+        if(catalogmanager.Vtable[tableIndex].attributes[i].indexName != "NULL")
+        {
+            indexmanager.afterDelete(catalogmanager.Vtable[tableIndex].attributes[i], <#string attributeValue#>, <#Table &table#>, <#long addr#>);
+        }
+    }*/
     return total;
 }
 
@@ -559,7 +577,6 @@ void APIManager:: showResults(string tableName, vector<Row> row)
 //总长度不超过11位
 bool APIManager:: isValidInt(string s)
 {
-    int i = 0;
     s = s.substr(s.find(' ') + 1);
     if(s.size() == 0 || s.size() > 11)
     {
@@ -650,12 +667,12 @@ bool APIManager:: checkInsertType(string tableName, vector<string> insert)
     {
         attrType = catalogmanager.Vtable[tableIndex].attributes[i].type;
         switch (attrType) {
-            case 0: // int
+            case INT: // int
                 if (!isValidInt(insert[i])) {
                     return false;
                 }
                 break;
-            case 2: // float
+            case FLOAT: // float
                 if (!isValidFloat(insert[i])) {
                     return false;
                 }
@@ -666,3 +683,38 @@ bool APIManager:: checkInsertType(string tableName, vector<string> insert)
     return true;
 }
 
+bool APIManager:: uniqueValue(string tableName, vector<string> &row)
+{
+    int tableIndex = catalogmanager.findTable(tableName);
+    vector<Row> result = select(tableName);
+    string currentValue;
+    int type;
+    for(size_t i = 0; i < row.size(); ++i)
+    {
+        if((catalogmanager.Vtable[tableIndex].attributes[i].isUnique || catalogmanager.Vtable[tableIndex].attributes[i].isPrimaryKey)
+           &&(catalogmanager.Vtable[tableIndex].attributes[i].type != FLOAT))
+        {
+            for(size_t j = 0; j < result.size(); ++j)
+            {
+                currentValue = recordmanager.attriInRecord(catalogmanager.Vtable[tableIndex], result[j], catalogmanager.Vtable[tableIndex].attributes[i].name);
+                type = catalogmanager.Vtable[tableIndex].attributes[i].type;
+                switch (type) {
+                    case INT:
+                        row[i] = format(toInt(row[i]));
+                        break;
+                    case CHAR:
+                        row[i] = row[i].substr(row[i].find_first_of('\'')+1, row[i].find_last_of('\'') - row[i].find_first_of('\'') - 1);
+                        currentValue= currentValue.substr(0,currentValue.find_first_of(' '));
+                        break;
+                }
+                cout<<"test compare:"<<currentValue<<" "<<row[i]<<endl;
+                if(currentValue == row[i])
+                {
+                    return false;
+                }
+            }
+        }
+        
+    }
+    return true;
+}

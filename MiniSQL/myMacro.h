@@ -51,5 +51,7 @@
 #define SAMETABLE               36
 #define SAMEINDEX               37
 #define INSERTTYPEERROR         38
+#define UNIQUEVALUE             39
 #define SUCCESS                 40
+#define NOATTRI                 41
 #endif

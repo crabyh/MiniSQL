@@ -656,6 +656,7 @@ bool Interpreter::parseCommand(string input)
                                 {
                                     currentTable.primaryKey = column[primaryKeyPosition].name;
                                     currentTable.attributes[primaryKeyPosition].isUnique = true;
+                                    currentTable.attributes[primaryKeyPosition].isPrimaryKey = true;
                                 }
                                 if(uniqueKeyPostion != -1)
                                 {
@@ -877,9 +878,14 @@ bool Interpreter:: executeCommand()
                 cout<<"The table has been created"<<endl;
                 break;}
             case INDEX:
-                if(API.existTable(currentTable.name) == false)//表不存在
+                if(API.existTable(currentCommand.objectName[1]) == false)//表不存在
                 {
                     outputHelp(TABLEERROR);
+                    return false;
+                }
+                if(API.exsitAttrTable(currentCommand.objectName[1], currentCommand.objectName[2]))
+                {
+                    outputHelp(NOATTRI);
                     return false;
                 }
                 if(API.existIndex(currentCommand.objectName[0]) == true)//索引名已经存在
@@ -977,6 +983,11 @@ bool Interpreter:: executeCommand()
                 outputHelp(INSERTTYPEERROR);
                 return false;
             }
+            if(API.uniqueValue(currentCommand.objectName[0], insert) == false)
+            {
+                outputHelp(UNIQUEVALUE);
+                return false;
+            }
             API.insertValue(currentCommand.objectName[0], insert);
             cout<<"The data have been inserted"<<endl;
             break;
@@ -1067,19 +1078,30 @@ void Interpreter:: outputHelp(int errorType)
             break;
         case EXEFILERR:
             cout << "ERROR: No such file or directory!" << endl;
+            break;
         case WHEREERROR:
             cout << "ERROR: Incorrect usage of \"where\" condition" << endl;
             break;
         case INVALIDNAME:
             cout << "ERROR: Invalid name, please check again." << endl;
+            break;
         case TYPEERROR:
             cout << "ERROR: We only support char, float and int, please check the type of your data."<<endl;
+            break;
         case SAMETABLE:
             cout << "ERROR: This table already exists."<<endl;
+            break;
         case SAMEINDEX:
             cout << "ERROR: This index already exists."<<endl;
+            break;
         case INSERTTYPEERROR:
             cout << "ERROR: Worng data type."<<endl;
+            break;
+        case UNIQUEVALUE:
+            cout << "ERROR: Same value for the unique attribute."<<endl;
+            break;
+        case NOATTRI:
+            cout << "ERROR: This attribute does not exist." <<endl;
             break;
     }
 }

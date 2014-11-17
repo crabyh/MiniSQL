@@ -18,6 +18,7 @@ public:
     bool existTable(string tableName);//与catalog交互，返回表是否存在，1表示存在，0表示不存在
     bool existIndex(string indexName);//与catalog交互，判断某一索引名是否存在，存在则返回表的序号，否则－1
     bool existIndexAttr(string tableName, string attriName);//判断某一属性上是否已经有索引
+    bool exsitAttrTable(string tableName, string attriName);//判断某一表中是否存在某一属性
     bool isUnique(string tableName, string attriName);//判断某一属性是否为unique
     
     Table & creatTable(Table &table);//与catalog模块交互建表
@@ -27,6 +28,7 @@ public:
     bool dropIndex(string indexName);//与catalog交互，删除index
     
     bool insertValue(string tablename, vector<string>& row);//与record、catalog、index模块交互，插入对应值
+    bool uniqueValue(string tableName, vector<string>& row);//当属姓为unique时，判断插入值是否相等
     
     vector<Row> select(string tablename);                                    //与record交互，获取表中信息
     vector<Row> select(string tablename, vector<Conditions>& condition);     //根据条件获取表中信息
