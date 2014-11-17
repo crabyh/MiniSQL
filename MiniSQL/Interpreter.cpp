@@ -520,7 +520,7 @@ bool Interpreter::checkObjectName(string objectName)
         {
             for(size_t i = 1; i < objectName.size(); ++i)
             {
-                if((objectName[i]>='0' && objectName[i]<='9') || objectName[i] == '_' ||(objectName[i]>='A' && objectName[i]<='Z'))
+                if((objectName[i]>='0' && objectName[i]<='9') || objectName[i] == '_' ||(objectName[i]>='A' && objectName[i]<='Z') || (objectName[i] == '-'))
                 {
                     continue;
                 }
