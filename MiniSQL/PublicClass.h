@@ -25,7 +25,17 @@ using namespace std;
 enum type {INT, CHAR, FLOAT};
 enum CONDITION_TYPE {EQUAL, NOT_EQUAL, GREATER, GREATER_EQUAL, SMALLER, SMALLER_EQUAL, ALL,EXIST, ERROR};
 
-
+// used in b+ tree
+// IndexManager
+struct nodeData
+{
+    int blockNum;
+    int blockOffset;
+    string indexName;
+    string tableName;
+    string recordValue;
+    bool isValid;
+};
 
 class Conditions
 {
