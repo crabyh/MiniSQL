@@ -19,7 +19,7 @@ public:
     bool existIndexAttr(string tableName, string attriName);//判断某一属性上是否已经有索引
     bool isUnique(string tableName, string attriName);//判断某一属性是否为unique
     
-    Table creatTable(Table &table);//与catalog模块交互建表
+    Table & creatTable(Table &table);//与catalog模块交互建表
     bool dropTable(string tablename); //与catalog，index交互，删除索引；与catalog和record交互，删除表格数据
     
     bool createIndex(string indexName, string tableName, string attriName);//与catalog交互，创建index

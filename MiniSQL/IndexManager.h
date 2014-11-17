@@ -152,7 +152,6 @@ public:
 class IndexManager
 {
 public:
-    IndexManager();
     IndexManager(BufferManager &bm, CatalogManager &cm, RecordManager &rm);
     ~IndexManager();
     

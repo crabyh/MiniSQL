@@ -62,7 +62,7 @@ bool APIManager:: isUnique(string tableName, string attriName)
 
 //在interpreter中检测table是否存在
 //与catalog模块交互建表
-Table APIManager:: creatTable(Table &table)
+Table & APIManager:: creatTable(Table &table)
 {
     Table & tempTable = catalogmanager.createTable(table.name, table.primaryKey);
     for(size_t i = 0; i < table.attributes.size(); ++i)
@@ -79,10 +79,14 @@ Table APIManager:: creatTable(Table &table)
 }
 
 //在interpreter中检测indexname是否合法，table是否存在，attribute是否存在
-//与catalog交互，创建index
+//调用indexManager的接口
 bool APIManager:: createIndex(string indexName, string tableName, string attriName)
 {
-    return catalogmanager.createIndex(indexName, tableName, attriName);
+    int tablePosition = catalogmanager.findTable(tableName); // find table's position
+    Table & table = catalogmanager.Vtable[tablePosition]; // get table
+    int pkNo = catalogmanager.getAttriNum(table, attriName); // find pk's position
+    int maxLength = table.attributes[pkNo].length; // get pk's length
+    return indexmanager.createIndex(indexName, table, attriName, maxLength);
 }
 
 //在interpreter中检测indexname是否合法，table是否存在，index是否存在
