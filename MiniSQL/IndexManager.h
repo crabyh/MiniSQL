@@ -177,7 +177,7 @@ public:
     void afterUpdate(Attribute & attribute, string attributeValue, Table & table, FILEPTR addr);
     
     set<string> indexSet; // store all index(indexName)
-    set<BPlusTree *> btreeSet;
+    set<BPlusTree *> btreeSet; // store all btree
     BufferManager & bm;
     RecordManager & rm;
     CatalogManager & cm;

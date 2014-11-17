@@ -832,7 +832,8 @@ bool Interpreter:: executeCommand()
             switch (currentCommand.objectType)
         {
             case TABLE:
-            {if(API.existTable(currentTable.name))//如果这张表已经存在
+            {
+                if(API.existTable(currentTable.name)) //如果这张表已经存在
                 {
                     outputHelp(SAMETABLE);
                     return false;
@@ -842,7 +843,8 @@ bool Interpreter:: executeCommand()
                     outputHelp(NOPRIKEY);
                     return false;
                 }
-                string indexName = currentTable.primaryKey + "Index";
+//                string indexName = currentTable.primaryKey + "Index";
+                string indexName = currentTable.name + "-" + currentTable.primaryKey;
                 API.creatTable(currentTable);
                 API.createIndex(indexName, currentTable.name, currentTable.primaryKey);
                 cout<<"The table has been created"<<endl;

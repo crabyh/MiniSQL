@@ -28,10 +28,10 @@ bool APIManager:: existTable(string tableName)
         return false;
 }
 
-//与catalog交互，判断某一索引名是否存在，存在则返回表的序号，否则－1
+//与catalog交互，判断某一索引名是否存在，存在则返回true，否则false
 bool APIManager:: existIndex(string IndexName)
 {
-    if(catalogmanager.findIndexTable(IndexName))
+    if(catalogmanager.findIndexTable(IndexName) != -1)
         return true;
     else
         return false;
@@ -82,11 +82,12 @@ Table & APIManager:: creatTable(Table &table)
 //调用indexManager的接口
 bool APIManager:: createIndex(string indexName, string tableName, string attriName)
 {
+    string newIndexName = tableName + "-" + attriName; // follow indexName convention
     int tablePosition = catalogmanager.findTable(tableName); // find table's position
     Table & table = catalogmanager.Vtable[tablePosition]; // get table
     int pkNo = catalogmanager.getAttriNum(table, attriName); // find pk's position
     int maxLength = table.attributes[pkNo].length; // get pk's length
-    return indexmanager.createIndex(indexName, table, attriName, maxLength);
+    return indexmanager.createIndex(newIndexName, table, attriName, maxLength);
 }
 
 //在interpreter中检测indexname是否合法，table是否存在，index是否存在

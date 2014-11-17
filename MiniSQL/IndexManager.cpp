@@ -810,6 +810,10 @@ IndexManager::~IndexManager()
 // recursively traverse the tree and transfer the blocks
 void IndexManager::traverse(Node * node, string fileName)
 {
+    if (node == NULL) // aimed for situation where there is no tree
+    {
+        return;
+    }
     for (int i = 0; i < ((InnerNode *)node)->m_children.size(); ++i)
     {
         if (((InnerNode *)node)->m_children[i]->m_nodeType != LEAF)
@@ -842,14 +846,18 @@ vector<nodeData> IndexManager::findAttributeValues(string attribute, Table &tabl
         size += sizeof(*table.AttriIt);
     }
     vector<nodeData> attributeValues;
-    for (int i = 0; i < table.attriNum; i++)
+//    for (int i = 0; i < table.attriNum; i++)
+    for (int i = 0; i < table.recordNum; i++)
     {
         nodeData newNodeData;
         // table.eachRecordLength equals to the length of all attributes
         // thus i * length represents ith row, 1 * length represents length of all attributes
-        newNodeData.recordValue = bm.readData(filename, (table.eachRecordLength + 8) * i + size);
-        newNodeData.blockNum = table.blockNum + ((table.eachRecordLength + 8) * i + size) / BLOCKSIZE;
-        newNodeData.blockOffset = ((table.eachRecordLength + 8) * i + size) % BLOCKSIZE;
+        long fileAddr = (table.eachRecordLength + 8) * i + size;
+        if(fileAddr % BLOCKSIZE + table.eachRecordLength + 8 > BLOCKSIZE) // prevent reading cross-block
+            fileAddr = BLOCKSIZE * (fileAddr / BLOCKSIZE + 1);
+        newNodeData.recordValue = bm.readData(filename, fileAddr);
+        newNodeData.blockNum = table.blockNum + fileAddr / BLOCKSIZE;
+        newNodeData.blockOffset = fileAddr % BLOCKSIZE;
         newNodeData.isValid = true;
         newNodeData.indexName = table.name + "-" + attribute; // indexName is named after this convention
         newNodeData.tableName = table.name;
@@ -866,17 +874,21 @@ bool IndexManager::createIndex(string indexName, Table &table, string attributeN
     string filename = indexName + ".idx";
     fstream fout;
     fout.open(filename, ios::app);
-    if (indexSet.find(indexName) == indexSet.end()) // do not find the index, create a new one
+//    if (indexSet.find(indexName) == indexSet.end()) // do not find the index, create a new one
+    if (cm.findIndexTable(indexName) == -1 && indexSet.find(indexName) == indexSet.end()) //cannot find the index
     {
         // maxLength is equal to the length of this attribute which is set when creating table
         BPlusTree * newtree = new BPlusTree(maxLength);
         btreeSet.insert(newtree);
         vector<nodeData> attributeValues = findAttributeValues(attributeName, table, table.name + ".table"); // find record values corresponding to the attributeName
-        for (int i = 0; i < attributeValues.size(); ++i)
+        if (!attributeValues.empty()) // there are values
         {
-            newtree->insertValue(attributeValues[i].recordValue, attributeValues[i]); // insert record and its pointer into leaves
+            for (int i = 0; i < attributeValues.size(); ++i)
+            {
+                newtree->insertValue(attributeValues[i].recordValue, attributeValues[i]); // insert record and its pointer into leaves
+            }
+            traverse((*--btreeSet.end())->m_root, filename); // transfer each block in the tree into the file
         }
-        traverse((*--btreeSet.end())->m_root, filename); // transfer each block in the tree into the file
         cm.createIndex(indexName, table.name, attributeName);
         indexSet.insert(indexName);
         return true;

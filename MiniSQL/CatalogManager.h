@@ -25,8 +25,8 @@ public:
     bool initiaTable(Table& table);
     bool createIndex(string indexName, string tableName, string attriName);
     int findTable(string tableName);
-    int findIndexTable(string indexName);
-    int findIndexAttri(string indexName);
+    int findIndexTable(string indexName); //index 在哪张表，返回表在Vtable的序号
+    int findIndexAttri(string indexName); //返回在table的哪个attribute上
     bool dropTable(string tableName);
     bool dropIndex(string indexName);
     bool deleteAttri(Table &table, string attriName);
