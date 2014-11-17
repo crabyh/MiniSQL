@@ -210,8 +210,7 @@ vector<Row> APIManager::select(string tablename)
 {
     int tableIndex = catalogmanager.findTable(tablename);
     vector<Row> result;
-    //result = recordmanager.selectAll(catalogmanager.Vtable[tableIndex]);
-    int primaryKeyIndex = catalogmanager.getAttriNum(catalogmanager.Vtable[tableIndex], catalogmanager.Vtable[tableIndex].primaryKey);
+    result = recordmanager.selectAll(catalogmanager.Vtable[tableIndex]);
     return result;
 }
 
@@ -225,6 +224,7 @@ vector<Row> APIManager::select(string tablename, vector<Conditions>& condition)
     conditionType = condition[0].condition_type; // where clause's type
     int attributeIndex = catalogmanager.getAttriNum(catalogmanager.Vtable[tableIndex], condition[0].attribute);
     int type = catalogmanager.Vtable[tableIndex].attributes[attributeIndex].type;
+    
     switch (conditionType)
     {
         case EQUAL:
