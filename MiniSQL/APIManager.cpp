@@ -14,16 +14,15 @@
 #include "PublicClass.h"
 #include "myMacro.h"
 
-IndexManager indexmanager;
 BufferManager buffermanager;
 CatalogManager catalogmanager(buffermanager);
 RecordManager recordmanager(buffermanager, catalogmanager);
-
+IndexManager indexmanager(buffermanager, catalogmanager, recordmanager);
 
 //与catalog交互，返回表是否存在，1表示存在，0表示不存在
 bool APIManager:: existTable(string tableName)
 {
-    if(catalogmanager.findTable(tableName))
+    if(catalogmanager.findTable(tableName) != -1)
         return true;
     else
         return false;
@@ -65,10 +64,10 @@ bool APIManager:: isUnique(string tableName, string attriName)
 //与catalog模块交互建表
 Table APIManager:: creatTable(Table &table)
 {
-    catalogmanager.createTable(table.name, table.primaryKey);
+    Table & tempTable = catalogmanager.createTable(table.name, table.primaryKey);
     for(size_t i = 0; i < table.attributes.size(); ++i)
     {
-        catalogmanager.insertAttri(table, table.attributes[i].name, table.attributes[i].type, table.attributes[i].length);
+        catalogmanager.insertAttri(tempTable, table.attributes[i].name, table.attributes[i].type, table.attributes[i].length);
         if (table.primaryKey == table.attributes[i].name) // if attribute is primary key 
         {
             table.attributes[i].isPrimaryKey = true;
@@ -206,7 +205,7 @@ vector<Row> APIManager::select(string tablename)
 
 //在interpreter中检测table是否存在
 //与record交互，根据条件获取表中信息
-vector<Row> select(string tablename, vector<Conditions>& condition)
+vector<Row> APIManager::select(string tablename, vector<Conditions>& condition)
 {
     int tableIndex = catalogmanager.findTable(tablename);
     vector<Row> result;

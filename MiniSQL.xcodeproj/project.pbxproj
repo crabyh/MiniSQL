@@ -14,6 +14,7 @@
 		139FE0101A14C51B008AE39F /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139FE00E1A14C51B008AE39F /* test.cpp */; };
 		13ABA04E1A14B20F00F88D10 /* RecordManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13ABA04C1A14B20F00F88D10 /* RecordManager.cpp */; };
 		13CD38211A04EE4600337132 /* CatalogManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13CD38201A04EE4600337132 /* CatalogManager.cpp */; };
+		7A9A20FD1A19E58E00711604 /* IndexManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7A9A20FB1A19E58E00711604 /* IndexManager.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -44,6 +45,8 @@
 		13CD381D1A0497B200337132 /* CatalogManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CatalogManager.h; sourceTree = "<group>"; };
 		13CD381F1A04A6E400337132 /* PublicClass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PublicClass.h; sourceTree = "<group>"; };
 		13CD38201A04EE4600337132 /* CatalogManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CatalogManager.cpp; sourceTree = "<group>"; };
+		7A9A20FB1A19E58E00711604 /* IndexManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IndexManager.cpp; sourceTree = "<group>"; };
+		7A9A20FC1A19E58E00711604 /* IndexManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IndexManager.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +83,8 @@
 				132CEF661A03753600583B3C /* BufferManager.h */,
 				13ABA04C1A14B20F00F88D10 /* RecordManager.cpp */,
 				13ABA04D1A14B20F00F88D10 /* RecordManager.h */,
+				7A9A20FB1A19E58E00711604 /* IndexManager.cpp */,
+				7A9A20FC1A19E58E00711604 /* IndexManager.h */,
 				13CD38201A04EE4600337132 /* CatalogManager.cpp */,
 				13CD381D1A0497B200337132 /* CatalogManager.h */,
 				13CD381F1A04A6E400337132 /* PublicClass.h */,
@@ -154,6 +159,7 @@
 				131BA3EE1A198C300016CC9C /* APIManager.cpp in Sources */,
 				131BA3F31A198CDC0016CC9C /* Interpreter.cpp in Sources */,
 				139FE0101A14C51B008AE39F /* test.cpp in Sources */,
+				7A9A20FD1A19E58E00711604 /* IndexManager.cpp in Sources */,
 				131BA3F41A198CDC0016CC9C /* main.cpp in Sources */,
 				132CEF671A03753600583B3C /* BufferManager.cpp in Sources */,
 				13CD38211A04EE4600337132 /* CatalogManager.cpp in Sources */,
