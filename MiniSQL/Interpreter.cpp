@@ -883,7 +883,7 @@ bool Interpreter:: executeCommand()
                     outputHelp(TABLEERROR);
                     return false;
                 }
-                if(API.exsitAttrTable(currentCommand.objectName[1], currentCommand.objectName[2]))
+                if(API.exsitAttrTable(currentCommand.objectName[1], currentCommand.objectName[2]) == false)
                 {
                     outputHelp(NOATTRI);
                     return false;
@@ -893,12 +893,12 @@ bool Interpreter:: executeCommand()
                     outputHelp(SAMEINDEX);
                     return false;
                 }
-                if (API.existIndexAttr(currentCommand.objectName[1], currentCommand.objectName[2]))//如果属性上已经有索引
+                if (API.existIndexAttr(currentCommand.objectName[1], currentCommand.objectName[2]) == true)//如果属性上已经有索引
                 {
                     outputHelp(COLUMNERROR);
                     return false;
                 }
-                if(API.isUnique(currentCommand.objectName[1], currentCommand.objectName[2]))//如果属性不是unique
+                if(API.isUnique(currentCommand.objectName[1], currentCommand.objectName[2]) == false)//如果属性不是unique
                 {
                     outputHelp(VOIDUNI);
                     return false;
@@ -1050,10 +1050,10 @@ void Interpreter:: outputHelp(int errorType)
             cout << "ERROR: Incorrect usage of \"drop index\" query! Please check your input!" << endl;
             break;
         case VOIDPRI:
-            cout << "ERROR: Error: invalid primary key! Please check your input!" << endl;
+            cout << "ERROR: Error: Invalid primary key! Please check your input!" << endl;
             break;
         case VOIDUNI:
-            cout << "ERROR: Error: invalid unique key! Please check your input!" << endl;
+            cout << "ERROR: Error: Invalid unique key! Please check your input!" << endl;
             break;
         case CHARBOUD:
             cout << "ERROR: Error: only 1~255 charactors is allowed! Please check your input!" << endl;

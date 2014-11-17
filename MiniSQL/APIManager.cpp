@@ -51,10 +51,10 @@ bool APIManager:: existIndexAttr(string tableName, string attriName)
 
 bool APIManager:: exsitAttrTable(string tableName, string attriName)
 {
-    int taleIndex = catalogmanager.findTable(tableName);
-    for(int i = 0; i < catalogmanager.Vtable[taleIndex].attriNum; ++i)
+    int tableIndex = catalogmanager.findTable(tableName);
+    for(int i = 0; i < catalogmanager.Vtable[tableIndex].attriNum; ++i)
     {
-        if(catalogmanager.Vtable[i].attributes[i].name == attriName)
+        if(catalogmanager.Vtable[tableIndex].attributes[i].name == attriName)
             return true;
     }
     return false;
