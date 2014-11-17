@@ -844,7 +844,8 @@ bool Interpreter::executeCommand()
             switch (currentCommand.objectType)
         {
             case TABLE:
-            {if(API.existTable(currentTable.name))//如果这张表已经存在
+            {
+                if(API.existTable(currentTable.name))//如果这张表已经存在
                 {
                     outputHelp(SAMETABLE);
                     return false;
@@ -858,7 +859,8 @@ bool Interpreter::executeCommand()
                 API.creatTable(currentTable);
                 API.createIndex(indexName, currentTable.name, currentTable.primaryKey);
                 cout<<"The table has been created"<<endl;
-                break;}
+                break;
+            }
             case INDEX:
                 if(API.existTable(currentTable.name) == false)//表不存在
                 {
