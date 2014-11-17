@@ -7,17 +7,13 @@
 //
 
 #include "APIManager.h"
-#include "CatalogManager.h"
-#include "IndexManager.h"
-#include "RecordManager.h"
-#include "BufferManager.h"
-#include "PublicClass.h"
-#include "myMacro.h"
 
-IndexManager indexmanager;
+
+
 BufferManager buffermanager;
 CatalogManager catalogmanager(buffermanager);
 RecordManager recordmanager(buffermanager, catalogmanager);
+IndexManager indexmanager(buffermanager, catalogmanager, recordmanager);
 
 
 //与catalog交互，返回表是否存在，1表示存在，0表示不存在
@@ -115,7 +111,7 @@ int APIManager:: deleteValue(string tablename)
 //在interpreter中检测table是否存在
 //与rm交互，根据条件删除表中数据
 //与im交互删除index（如果存在）
-int APIManager:: deleteValue(string tablename, vector<Conditions> &condition)
+int APIManager::deleteValue(string tablename, vector<Conditions> &condition)
 {
     //Table table;
     int total = 0;
@@ -206,7 +202,7 @@ vector<Row> APIManager::select(string tablename)
 
 //在interpreter中检测table是否存在
 //与record交互，根据条件获取表中信息
-vector<Row> select(string tablename, vector<Conditions>& condition)
+vector<Row> APIManager::select(string tablename, vector<Conditions>& condition)
 {
     int tableIndex = catalogmanager.findTable(tablename);
     vector<Row> result;

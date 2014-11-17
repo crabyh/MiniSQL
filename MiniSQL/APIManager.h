@@ -9,14 +9,21 @@
 #ifndef __interpreter__APIManager__
 #define __interpreter__APIManager__
 
+#include <string>
 #include "PublicClass.h"
+#include "CatalogManager.h"
+#include "IndexManager.h"
+#include "RecordManager.h"
+#include "BufferManager.h"
+#include "PublicClass.h"
+#include "myMacro.h"
 
 class APIManager
 {
 public:
-    APIManager();
-    ~APIManager();
-    
+//    APIManager();
+//    ~APIManager();
+    b
     bool existTable(string tableName);//与catalog交互，返回表是否存在，1表示存在，0表示不存在
     bool existIndex(string indexName);//与catalog交互，判断某一索引名是否存在，存在则返回表的序号，否则－1
     bool existIndexAttr(string tableName, string attriName);//判断某一属性上是否已经有索引

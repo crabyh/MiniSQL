@@ -10,6 +10,13 @@
 #define interpreter_Interpreter_h
 
 #include "PublicClass.h"
+#include "myMacro.h"
+#include "PublicClass.h"
+#include "APIManager.h"
+#include <iostream>
+#include <algorithm>
+#include <sstream>
+#include <fstream>
 
 struct command
 {

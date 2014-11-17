@@ -15,11 +15,12 @@
 #include <cmath>
 #include <sstream>
 #include <fstream>
-#include "PublicClass.h"
 #include <cstdio>
+#include "PublicClass.h"
 #include "RecordManager.h"
 #include "BufferManager.h"
 #include "CatalogManager.h"
+
 
 using namespace std;
 
@@ -33,7 +34,7 @@ using namespace std;
 
 enum NODE_TYPE { INNER, LEAF };
 enum SIBLING_DIRECTION { LEFT, RIGHT };
-typedef nodeData DataType; // data stored in leaf represent offset of records in the table, thus use int
+typedef struct nodeData DataType; // data stored in leaf represent offset of records in the table, thus use int
 typedef string KeyType; // all attributes are treated as string ( int and float are formatted into string )
 
 /* Abstract nodes which inner and leaf nodes inherite from
@@ -152,8 +153,8 @@ public:
 class IndexManager
 {
 public:
-    IndexManager();
     IndexManager(BufferManager &bm, CatalogManager &cm, RecordManager &rm);
+//    IndexManager();
     ~IndexManager();
     
     // format int and float numbers in order to compare them in string

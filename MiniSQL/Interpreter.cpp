@@ -7,19 +7,12 @@
 //
 
 #include "Interpreter.h"
-#include "myMacro.h"
-#include "PublicClass.h"
-#include "APIManager.h"
-#include <iostream>
-#include <algorithm>
-#include <sstream>
-#include <fstream>
+
 using namespace std;
 APIManager API;
 
 Interpreter::Interpreter()
 {
-
 }
 
 Interpreter::~Interpreter()
@@ -843,7 +836,7 @@ bool Interpreter::parseCommand(string input)
     return true;
 }
 
-bool Interpreter:: executeCommand()
+bool Interpreter::executeCommand()
 {
     switch (currentCommand.operation)
     {
@@ -942,12 +935,14 @@ bool Interpreter:: executeCommand()
                 return false;
             }
             vector<Row> result;
-             if(condition.size())
-             {
-             result = API.select(currentCommand.objectName[0]);
-             }
-             else
-             result = API.select(currentCommand.objectName[0], condition);
+            if(condition.size())
+            {
+                result = API.select(currentCommand.objectName[0], condition);
+            }
+            else
+            {
+                result = API.select(currentCommand.objectName[0]);
+            }
             for(size_t i = 0; i < result.size(); ++i)//暂时这样写
             {
                 cout<<result[i].value<<endl;
