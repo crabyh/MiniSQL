@@ -154,6 +154,7 @@ vector<string> Interpreter:: readFile(string filename)
         {
             getline(inputfile, command, ';');
             //将command中的空白字符转化为空格
+            cout << command << endl;
             for(size_t i = 0; i < command.size(); ++i)
             {
                 if(command[i] == '\n'||command[i] == '\t')
@@ -973,6 +974,10 @@ bool Interpreter:: executeCommand()
                 cout<<"test originalInput after reading file"<<endl;
                 cout<<originalInput;
                 converseCase();
+                currentCommand.operation = -1;
+                currentCommand.objectType = -1;
+                currentCommand.objectName.clear();
+                insert.clear();
                 if(judgeCommandType(originalInput))
                 {
                     if(parseCommand(originalInput))

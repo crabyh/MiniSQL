@@ -29,7 +29,7 @@ int main(int argc, const char * argv[]) {
         }
         else
         inter.outputHelp(UNKNOWN);
-        inter.test();
+//        inter.test();
     }
         
     return 0;
