@@ -153,12 +153,23 @@ vector<string> Interpreter:: readFile(string filename)
         while(!inputfile.eof())
         {
             getline(inputfile, command, ';');
+            //将command中的空白字符转化为空格
+            for(size_t i = 0; i < command.size(); ++i)
+            {
+                if(command[i] == '\n'||command[i] == '\t')
+                    command[i] = ' ';
+            }
             fileCommands.push_back(command);
         }
         if(fileCommands.back() == "")
         {
             fileCommands.pop_back();
         }
+    }
+    cout<<"test read file:"<<endl;
+    for(size_t i = 0; i < fileCommands.size(); ++i)
+    {
+        cout<<fileCommands[i]<<endl;
     }
     return fileCommands;
 }
@@ -844,7 +855,7 @@ bool Interpreter:: executeCommand()
                 }
                 string indexName = currentTable.primaryKey + "Index";
                 Table & table = API.creatTable(currentTable);
-                API.createIndex(indexName, table, currentTable.primaryKey);
+                API.createIndex(indexName, currentCommand.objectName[0], currentTable.primaryKey);
                 cout<<"The table has been created"<<endl;
                 break;}
             case INDEX:
@@ -923,12 +934,12 @@ bool Interpreter:: executeCommand()
                 return false;
             }
             vector<Row> result;
-             if(condition.size())
+             if(condition.size()>0)
              {
-             result = API.select(currentCommand.objectName[0]);
+             result = API.select(currentCommand.objectName[0], condition);
              }
              else
-                 result = API.select(currentCommand.objectName[0], condition);
+                 result = API.select(currentCommand.objectName[0]);
             API.showResults(currentCommand.objectName[0], result);
             break;}
         case INSERT:
@@ -956,6 +967,8 @@ bool Interpreter:: executeCommand()
             for(size_t i = 0; i < commands.size(); ++i)
             {
                 originalInput = commands[i];
+                cout<<"test originalInput after reading file"<<endl;
+                cout<<originalInput;
                 converseCase();
                 if(judgeCommandType(originalInput))
                 {

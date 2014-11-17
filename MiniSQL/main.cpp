@@ -26,7 +26,6 @@ int main(int argc, const char * argv[]) {
             {
                 inter.executeCommand();
             }
-//            inter.parseCommand(inter.originalInput);
         }
         else
         inter.outputHelp(UNKNOWN);
