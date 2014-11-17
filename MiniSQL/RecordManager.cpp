@@ -127,7 +127,8 @@ Row RecordManager::nextRecord(Table &table){
 string RecordManager::attriInRecord(Table &table, Row &row, string attriName){
     int x = catalogmanager.getAttriNum(table, attriName);
     int length = catalogmanager.lengthBeforeAttri(table, attriName);
-    string s = row.value.substr(length,length+table.attributes[x].length);
+    string s = row.value.substr(length,
+                                table.attributes[x].length);
     return s;
 }
 
@@ -372,6 +373,14 @@ int RecordManager::deleteRow(Table &table, string attriName, int condition,int C
         num = toInt(data);
 //        cout<<data<<endl<<condition<<endl;
         if(compare(num,condition,CONDITION_TYPE) == true){
+            if(old_ptr == -1){      //删除第一条记录
+                FILEPTR ptrToFistRow = table.firstRow;
+                table.firstRow = row.ptr;
+                row.ptr = table.freeList;
+                table.freeList = ptrToFistRow;
+                buffermanager.writeData(table.name+".table", ptr+table.eachRecordLength, (char*)&row.ptr, sizeof(row.ptr), 1);
+                ptr = -1;
+            }
             if(old_ptr != -1){  //正常情况
                 FILEPTR freeList = table.freeList;
                 table.freeList = old_row.ptr;
@@ -380,13 +389,7 @@ int RecordManager::deleteRow(Table &table, string attriName, int condition,int C
                 buffermanager.writeData(table.name+".table", old_ptr+table.eachRecordLength, (char*)&old_row.ptr, sizeof(row.ptr), 1);
                 buffermanager.writeData(table.name+".table", ptr+table.eachRecordLength, (char*)&row.ptr, sizeof(row.ptr), 1);
             }
-            else{      //删除第一条记录
-                FILEPTR ptrToFistRow = table.firstRow;
-                table.firstRow = row.ptr;
-                row.ptr = table.freeList;
-                table.freeList = ptrToFistRow;
-                buffermanager.writeData(table.name+".table", ptr+table.eachRecordLength, (char*)&row.ptr, sizeof(row.ptr), 1);
-            }            delete_num++;
+            delete_num++;
         }
         old_row = row;
         old_ptr = ptr;
