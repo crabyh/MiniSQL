@@ -199,7 +199,7 @@ string Interpreter:: findNextToken(int firstpos, string input)
     }
     currentPosition = j;
     token = input.substr(firstpos,j-firstpos);
-    cout<<"test find next token: "<< token<<endl;
+    //cout<<"test find next token: "<< token<<endl;
     return token;
 }
 
@@ -247,6 +247,10 @@ vector<string> Interpreter:: splitConditions(int firstpos, string input)
         {
             conditions.push_back(substring.substr(last, index - last));
         }
+    }
+    for(size_t i = 0; i > conditions.size(); ++i)
+    {
+        cout<<"condition: "<<conditions[i]<<endl;
     }
     return conditions;
 }
@@ -808,7 +812,7 @@ bool Interpreter::parseCommand(string input)
                     else
                     {
                         objname = findNextToken(currentPosition, input);
-                        if (checkObjectName(objname))
+                        if (checkObjectName(objname) == true)
                         {
                             currentCommand.objectName.push_back(objname);
                             currentCommand.objectType = TABLE;
@@ -932,6 +936,7 @@ bool Interpreter:: executeCommand()
             {
                 int total;
                 if(condition.size() > 0)//带where从句
+
                 {
                     total = API.deleteValue(currentCommand.objectName[0], condition);
                 }
@@ -980,12 +985,16 @@ bool Interpreter:: executeCommand()
             for(size_t i = 0; i < commands.size(); ++i)
             {
                 originalInput = commands[i];
-                cout<<"test originalInput after reading file"<<endl;
-                cout<<originalInput;
+                //cout<<"test originalInput after reading file"<<endl;
+                //cout<<originalInput;
                 converseCase();
-                if(judgeCommandType(originalInput))
+                currentCommand.operation = -1;
+                currentCommand.objectType = -1;
+                currentCommand.objectName.clear();
+                insert.clear();
+                if(judgeCommandType(originalInput) == true)
                 {
-                    if(parseCommand(originalInput))
+                    if(parseCommand(originalInput) == true)
                         executeCommand();
                 }
             }
