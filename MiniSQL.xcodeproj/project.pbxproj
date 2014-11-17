@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		131BA3EE1A198C300016CC9C /* APIManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 131BA3EC1A198C300016CC9C /* APIManager.cpp */; };
+		131BA3F31A198CDC0016CC9C /* Interpreter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 131BA3EF1A198CDC0016CC9C /* Interpreter.cpp */; };
+		131BA3F41A198CDC0016CC9C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 131BA3F11A198CDC0016CC9C /* main.cpp */; };
 		132CEF671A03753600583B3C /* BufferManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 132CEF651A03753600583B3C /* BufferManager.cpp */; };
 		139FE0101A14C51B008AE39F /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 139FE00E1A14C51B008AE39F /* test.cpp */; };
 		13ABA04E1A14B20F00F88D10 /* RecordManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 13ABA04C1A14B20F00F88D10 /* RecordManager.cpp */; };
@@ -26,6 +29,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		131BA3EC1A198C300016CC9C /* APIManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = APIManager.cpp; sourceTree = "<group>"; };
+		131BA3ED1A198C300016CC9C /* APIManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APIManager.h; sourceTree = "<group>"; };
+		131BA3EF1A198CDC0016CC9C /* Interpreter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Interpreter.cpp; sourceTree = "<group>"; };
+		131BA3F01A198CDC0016CC9C /* Interpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Interpreter.h; sourceTree = "<group>"; };
+		131BA3F11A198CDC0016CC9C /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		131BA3F21A198CDC0016CC9C /* myMacro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = myMacro.h; sourceTree = "<group>"; };
 		132CEF5B1A03751400583B3C /* MiniSQL */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MiniSQL; sourceTree = BUILT_PRODUCTS_DIR; };
 		132CEF651A03753600583B3C /* BufferManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BufferManager.cpp; sourceTree = "<group>"; };
 		132CEF661A03753600583B3C /* BufferManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BufferManager.h; sourceTree = "<group>"; };
@@ -74,6 +83,12 @@
 				13CD38201A04EE4600337132 /* CatalogManager.cpp */,
 				13CD381D1A0497B200337132 /* CatalogManager.h */,
 				13CD381F1A04A6E400337132 /* PublicClass.h */,
+				131BA3EC1A198C300016CC9C /* APIManager.cpp */,
+				131BA3ED1A198C300016CC9C /* APIManager.h */,
+				131BA3EF1A198CDC0016CC9C /* Interpreter.cpp */,
+				131BA3F01A198CDC0016CC9C /* Interpreter.h */,
+				131BA3F11A198CDC0016CC9C /* main.cpp */,
+				131BA3F21A198CDC0016CC9C /* myMacro.h */,
 				139FE00E1A14C51B008AE39F /* test.cpp */,
 			);
 			path = MiniSQL;
@@ -136,7 +151,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				13ABA04E1A14B20F00F88D10 /* RecordManager.cpp in Sources */,
+				131BA3EE1A198C300016CC9C /* APIManager.cpp in Sources */,
+				131BA3F31A198CDC0016CC9C /* Interpreter.cpp in Sources */,
 				139FE0101A14C51B008AE39F /* test.cpp in Sources */,
+				131BA3F41A198CDC0016CC9C /* main.cpp in Sources */,
 				132CEF671A03753600583B3C /* BufferManager.cpp in Sources */,
 				13CD38211A04EE4600337132 /* CatalogManager.cpp in Sources */,
 			);

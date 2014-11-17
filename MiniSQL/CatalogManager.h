@@ -10,6 +10,7 @@
 #define __MiniSQL__CatalogManager__
 
 #include "PublicClass.h"
+#include "BufferManager.h"
 
 class CatalogManager
 {

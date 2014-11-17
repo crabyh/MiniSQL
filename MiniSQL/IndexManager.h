@@ -33,7 +33,7 @@ using namespace std;
 
 enum NODE_TYPE { INNER, LEAF };
 enum SIBLING_DIRECTION { LEFT, RIGHT };
-typedef nodeData DataType; // data stored in leaf represent offset of records in the table, thus use int
+typedef struct nodeData DataType; // data stored in leaf represent offset of records in the table, thus use int
 typedef string KeyType; // all attributes are treated as string ( int and float are formatted into string )
 
 /* Abstract nodes which inner and leaf nodes inherite from
