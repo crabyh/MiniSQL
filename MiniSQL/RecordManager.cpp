@@ -127,7 +127,7 @@ Row RecordManager::nextRecord(Table &table){
 string RecordManager::attriInRecord(Table &table, Row &row, string attriName){
     int x = catalogmanager.getAttriNum(table, attriName);
     int length = catalogmanager.lengthBeforeAttri(table, attriName);
-    string s = row.value.substr(length,length+table.attributes[x].length);
+    string s = row.value.substr(length,table.attributes[x].length);
     return s;
 }
 

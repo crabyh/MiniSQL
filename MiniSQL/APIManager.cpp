@@ -267,14 +267,14 @@ void APIManager:: showResults(string tableName, vector<Row> row)
         else
             currentMaxLength = (int)catalogmanager.Vtable[tableIndex].attributes[i].name.length();
         max.push_back(currentMaxLength);
-        for(int j = 0; j < currentMaxLength + 1; j++)
+        for(int j = 0; j < currentMaxLength; j++)
         {
             cout << "-";
         }
         cout << "+";
     }
     cout << endl;
-    cout << "| ";//第二行最左侧的竖线
+    cout << "|";//第二行最左侧的竖线
     int leftLength = 0;//剩下的空格长度
     //输出属性名
     for(size_t i = 0; i < catalogmanager.Vtable[tableIndex].attributes.size(); ++i)
@@ -307,14 +307,28 @@ void APIManager:: showResults(string tableName, vector<Row> row)
         for(int j = 0; j < catalogmanager.Vtable[tableIndex].attriNum; ++j)//列
         {
             value = recordmanager.attriInRecord(catalogmanager.Vtable[tableIndex], row[i], catalogmanager.Vtable[tableIndex].attributes[j].name);
+            //单独处理int类型
+            if(catalogmanager.Vtable[tableIndex].attributes[j].type == INT)
+            {
+                size_t intindex = 0;
+                for(intindex = 0; intindex < value.size(); ++intindex)
+                {
+                    if(value[intindex] != '0')
+                        break;
+                }
+                value = value.substr(intindex, value.size() - intindex);
+                //cout<<value;
+            }
             leftLength = max[j] - (int)value.size();
             cout<<value;
+            
             for(int k = 0; k < leftLength; ++k)
             {
                 cout<<" ";
             }
             cout<<"|";
         }
+        cout<<endl;
         //输出每一行下边框
         cout<<"+";
         for(int j = 0; j < catalogmanager.Vtable[tableIndex].attriNum; ++j)
@@ -325,6 +339,7 @@ void APIManager:: showResults(string tableName, vector<Row> row)
             }
             cout<<"+";
         }
+        cout<<endl;
     }
 }
 
