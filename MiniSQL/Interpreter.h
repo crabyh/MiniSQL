@@ -30,8 +30,6 @@ private:
     int primaryKeyPosition;           //标记primary key的位置
     int uniqueKeyPostion;             //标记unique key的位置
 public:
-    Interpreter();
-    ~Interpreter();
     string originalInput;             //原始的输入，以；结束
     command currentCommand;           //当前执行的指令
     void init();                         //初始化

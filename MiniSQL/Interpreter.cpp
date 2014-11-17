@@ -17,14 +17,6 @@
 using namespace std;
 APIManager API;
 
-Interpreter::Interpreter()
-{
-
-}
-
-Interpreter::~Interpreter()
-{
-}
 
 void Interpreter:: init()
 {
@@ -626,11 +618,6 @@ bool Interpreter::parseCommand(string input)
                             {
                                 currentTable.name = objname;//记录当前表格信息
                                 currentTable.attriNum = (int)column.size();
-                                if(primaryKeyPosition != -1)
-                                {
-                                    currentTable.primaryKey = column[primaryKeyPosition].name;
-                                }
-                                currentTable.primaryKey = column[primaryKeyPosition].name;
                                 for(size_t ii = 0; ii < column.size(); ++ii)
                                 {
                                     Attribute tmpattr;
@@ -638,6 +625,11 @@ bool Interpreter::parseCommand(string input)
                                     tmpattr.type = column[ii].type;
                                     tmpattr.length = column[ii].length;
                                     currentTable.attributes.push_back(tmpattr);
+                                }
+                                if(primaryKeyPosition != -1)
+                                {
+                                    currentTable.primaryKey = column[primaryKeyPosition].name;
+                                    currentTable.attributes[primaryKeyPosition].isUnique = true;
                                 }
                                 if(uniqueKeyPostion != -1)
                                 {
@@ -818,21 +810,10 @@ bool Interpreter::parseCommand(string input)
                 }
                 break;
             case EXECFILE://完成
-            {objname= findNextToken(currentPosition, input);
+            objname= findNextToken(currentPosition, input);
                     currentCommand.objectName.push_back(objname);
-                    currentCommand.objectType = FILE;
-                vector<string> commands = readFile(currentCommand.objectName[0]);
-                for(size_t i = 0; i < commands.size(); ++i)
-                {
-                    originalInput = commands[i];
-                    converseCase();
-                   /* if(judgeCommandType(originalInput))
-                    {
-                        //if(parseCommand(originalInput))
-                           // executeCommand();
-                    }*/
-                }
-                break;}
+                    currentCommand.objectType = FILE;            
+            break;
             case QUIT://检查quit后是否还有其他字符
                 if(findNextToken(currentPosition, input).size())
                 return false;
@@ -947,11 +928,8 @@ bool Interpreter:: executeCommand()
              result = API.select(currentCommand.objectName[0]);
              }
              else
-             result = API.select(currentCommand.objectName[0], condition);
-            for(size_t i = 0; i < result.size(); ++i)//暂时这样写
-            {
-                cout<<result[i].value<<endl;
-            }
+                 result = API.select(currentCommand.objectName[0], condition);
+            API.showResults(currentCommand.objectName[0], result);
             break;}
         case INSERT:
             if(API.existTable(currentTable.name)==false)//如果这张表不存在
