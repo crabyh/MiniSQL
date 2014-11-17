@@ -146,6 +146,7 @@ bool APIManager:: insertValue(string tablename, vector<string> &row)
     int tableIndex;
     int intValue = 0;
     float floatValue = 0;
+    string charValue = "";
     tableIndex = catalogmanager.findTable(tablename);
     bool indexflag = false;
     int attributeIndex = -1;//如果存在索引，对应的属性位置
@@ -166,8 +167,10 @@ bool APIManager:: insertValue(string tablename, vector<string> &row)
                 add = recordmanager.insertValues(catalogmanager.Vtable[tableIndex], floatValue);
                 break;
             case CHAR:
-                row[i] = row[i].substr(row[i].find_first_of("'")+1, row[i].find_last_of("'") - row[i].find_first_of("'") - 1);
-                add = recordmanager.insertValues(catalogmanager.Vtable[tableIndex], row[i]);
+                charValue = row[i].substr(row[i].find_first_of("'")+1, row[i].find_last_of("'") - row[i].find_first_of("'") - 1);
+                cout<<"test insert charvalue"<<endl;
+                cout<<charValue<<endl;
+                add = recordmanager.insertValues(catalogmanager.Vtable[tableIndex], charValue);
                 break;
         }
         if(catalogmanager.Vtable[tableIndex].attributes[i].indexName != "NULL")//存在索引
@@ -266,7 +269,7 @@ void APIManager:: showResults(string tableName, vector<Row> row)
         max.push_back(currentMaxLength);
         for(int j = 0; j < currentMaxLength + 1; j++)
         {
-            cout << "_";
+            cout << "-";
         }
         cout << "+";
     }
@@ -291,7 +294,7 @@ void APIManager:: showResults(string tableName, vector<Row> row)
     {
         for(int j = 0; j < max[i]; ++j)
         {
-            cout<<"_";
+            cout<<"-";
         }
         cout<<"+";
     }
@@ -318,7 +321,7 @@ void APIManager:: showResults(string tableName, vector<Row> row)
         {
             for(int k = 0; k < max[j]; ++k)
             {
-                cout<<"_";
+                cout<<"-";
             }
             cout<<"+";
         }

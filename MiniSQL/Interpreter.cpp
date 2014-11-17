@@ -867,7 +867,7 @@ bool Interpreter:: executeCommand()
                     outputHelp(TABLEERROR);
                     return false;
                 }
-                if(API.existIndex(currentCommand.objectName[0]) == false)//索引名已经存在
+                if(API.existIndex(currentCommand.objectName[0]) == true)//索引名已经存在
                 {
                     outputHelp(SAMEINDEX);
                     return false;

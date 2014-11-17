@@ -10,6 +10,7 @@
 #define __interpreter__APIManager__
 
 #include "PublicClass.h"
+#include <string>
 
 class APIManager
 {
