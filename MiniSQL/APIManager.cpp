@@ -493,13 +493,13 @@ vector<Row> APIManager::select(string tablename, vector<Conditions>& condition)
                     switch (type)
                     {
                         case INT:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toInt(condition[i].attributeValue), EQUAL);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, toInt(condition[i].attributeValue), EQUAL);
                             break;
                         case FLOAT:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toFloat(condition[i].attributeValue), EQUAL);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, toFloat(condition[i].attributeValue), EQUAL);
                             break;
                         case CHAR:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, condition[i].attributeValue, EQUAL);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, condition[i].attributeValue, EQUAL);
                             break;
                     }
                     break;
@@ -509,13 +509,13 @@ vector<Row> APIManager::select(string tablename, vector<Conditions>& condition)
                     switch (type)
                     {
                         case INT:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toInt(condition[i].attributeValue), NOT_EQUAL);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, toInt(condition[i].attributeValue), NOT_EQUAL);
                             break;
                         case FLOAT:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toFloat(condition[i].attributeValue), NOT_EQUAL);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, toFloat(condition[i].attributeValue), NOT_EQUAL);
                             break;
                         case CHAR:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, condition[i].attributeValue, NOT_EQUAL);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, condition[i].attributeValue, NOT_EQUAL);
                             break;
                     }
                     break;
@@ -525,13 +525,13 @@ vector<Row> APIManager::select(string tablename, vector<Conditions>& condition)
                     switch (type)
                     {
                         case INT:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toInt(condition[i].attributeValue), GREATER);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, toInt(condition[i].attributeValue), GREATER);
                             break;
                         case FLOAT:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toFloat(condition[i].attributeValue), GREATER);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, toFloat(condition[i].attributeValue), GREATER);
                             break;
                         case CHAR:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, condition[i].attributeValue, GREATER);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, condition[i].attributeValue, GREATER);
                             break;
                     }
                     break;
@@ -541,13 +541,13 @@ vector<Row> APIManager::select(string tablename, vector<Conditions>& condition)
                     switch (type)
                     {
                         case INT:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toInt(condition[i].attributeValue), GREATER_EQUAL);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, toInt(condition[i].attributeValue), GREATER_EQUAL);
                             break;
                         case FLOAT:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toFloat(condition[i].attributeValue), GREATER_EQUAL);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, toFloat(condition[i].attributeValue), GREATER_EQUAL);
                             break;
                         case CHAR:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, condition[i].attributeValue, GREATER_EQUAL);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, condition[i].attributeValue, GREATER_EQUAL);
                             break;
                     }
                     break;
@@ -557,13 +557,13 @@ vector<Row> APIManager::select(string tablename, vector<Conditions>& condition)
                     switch (type)
                     {
                         case INT:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toInt(condition[i].attributeValue), SMALLER);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, toInt(condition[i].attributeValue), SMALLER);
                             break;
                         case FLOAT:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toFloat(condition[i].attributeValue), SMALLER);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, toFloat(condition[i].attributeValue), SMALLER);
                             break;
                         case CHAR:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, condition[i].attributeValue, SMALLER);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, condition[i].attributeValue, SMALLER);
                             break;
                     }
                     break;
@@ -573,13 +573,13 @@ vector<Row> APIManager::select(string tablename, vector<Conditions>& condition)
                     switch (type)
                     {
                         case INT:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toInt(condition[i].attributeValue), SMALLER_EQUAL);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, toInt(condition[i].attributeValue), SMALLER_EQUAL);
                             break;
                         case FLOAT:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toFloat(condition[i].attributeValue), SMALLER_EQUAL);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, toFloat(condition[i].attributeValue), SMALLER_EQUAL);
                             break;
                         case CHAR:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, condition[i].attributeValue, SMALLER_EQUAL);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, condition[i].attributeValue, SMALLER_EQUAL);
                             break;
                     }
                     break;
@@ -589,13 +589,13 @@ vector<Row> APIManager::select(string tablename, vector<Conditions>& condition)
                     switch (type)
                     {
                         case INT:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toInt(condition[i].attributeValue), ALL);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex],result, condition[i].attribute, toInt(condition[i].attributeValue), ALL);
                             break;
                         case FLOAT:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toFloat(condition[i].attributeValue), ALL);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, toFloat(condition[i].attributeValue), ALL);
                             break;
                         case CHAR:
-                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, condition[i].attributeValue, ALL);
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, condition[i].attributeValue, ALL);
                             break;
                     }
                     break;
