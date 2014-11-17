@@ -217,36 +217,245 @@ vector<Row> APIManager::select(string tablename, vector<Conditions>& condition)
 {
     int tableIndex = catalogmanager.findTable(tablename);
     vector<Row> result;
-    int type;
-    type = condition[0].condition_type;
-    switch (type) {
-        case INT:
-            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, toInt(condition[0].attributeValue), INT);
+    CONDITION_TYPE conditionType;
+    conditionType = condition[0].condition_type; // where clause's type
+    int attributeIndex = catalogmanager.getAttriNum(catalogmanager.Vtable[tableIndex], condition[0].attribute);
+    int type = catalogmanager.Vtable[tableIndex].attributes[attributeIndex].type;
+    switch (conditionType)
+    {
+        case EQUAL:
+        {
+            switch (type)
+            {
+                case INT:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, toInt(condition[0].attributeValue), EQUAL);
+                    break;
+                case FLOAT:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, toFloat(condition[0].attributeValue), EQUAL);
+                    break;
+                case CHAR:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, condition[0].attributeValue, EQUAL);
+                    break;
+            }
             break;
-        case FLOAT:
-            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, toFloat(condition[0].attributeValue), FLOAT);
+        }
+        case NOT_EQUAL:
+        {
+            switch (type)
+            {
+                case INT:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, toInt(condition[0].attributeValue), NOT_EQUAL);
+                    break;
+                case FLOAT:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, toFloat(condition[0].attributeValue), NOT_EQUAL);
+                    break;
+                case CHAR:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, condition[0].attributeValue, NOT_EQUAL);
+                    break;
+            }
             break;
-        case CHAR:
-            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, condition[0].attributeValue, CHAR);
+        }
+        case GREATER:
+        {
+            switch (type)
+            {
+                case INT:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, toInt(condition[0].attributeValue), GREATER);
+                    break;
+                case FLOAT:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, toFloat(condition[0].attributeValue), GREATER);
+                    break;
+                case CHAR:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, condition[0].attributeValue, GREATER);
+                    break;
+            }
             break;
+        }
+        case GREATER_EQUAL:
+        {
+            switch (type)
+            {
+                case INT:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, toInt(condition[0].attributeValue), GREATER_EQUAL);
+                    break;
+                case FLOAT:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, toFloat(condition[0].attributeValue), GREATER_EQUAL);
+                    break;
+                case CHAR:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, condition[0].attributeValue, GREATER_EQUAL);
+                    break;
+            }
+            break;
+        }
+        case SMALLER:
+        {
+            switch (type)
+            {
+                case INT:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, toInt(condition[0].attributeValue), SMALLER);
+                    break;
+                case FLOAT:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, toFloat(condition[0].attributeValue), SMALLER);
+                    break;
+                case CHAR:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, condition[0].attributeValue, SMALLER);
+                    break;
+            }
+            break;
+        }
+        case SMALLER_EQUAL:
+        {
+            switch (type)
+            {
+                case INT:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, toInt(condition[0].attributeValue), SMALLER_EQUAL);
+                    break;
+                case FLOAT:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, toFloat(condition[0].attributeValue), SMALLER_EQUAL);
+                    break;
+                case CHAR:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, condition[0].attributeValue, SMALLER_EQUAL);
+                    break;
+            }
+            break;
+        }
+        case ALL:
+        {
+            switch (type)
+            {
+                case INT:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, toInt(condition[0].attributeValue), ALL);
+                    break;
+                case FLOAT:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, toFloat(condition[0].attributeValue), ALL);
+                    break;
+                case CHAR:
+                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[0].attribute, condition[0].attributeValue, ALL);
+                    break;
+            }
+            break;
+        }
     }
     if(condition.size() > 1)
     {
         for(size_t i = 1; i < condition.size(); ++i)
         {
-            type = condition[i].condition_type;
-            switch (type) {
-                case INT:
-                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, toInt(condition[i].attributeValue), INT);
+            conditionType = condition[i].condition_type;
+            switch (conditionType)
+            {
+                case EQUAL:
+                {
+                    switch (type)
+                    {
+                        case INT:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toInt(condition[i].attributeValue), EQUAL);
+                            break;
+                        case FLOAT:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toFloat(condition[i].attributeValue), EQUAL);
+                            break;
+                        case CHAR:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, condition[i].attributeValue, EQUAL);
+                            break;
+                    }
                     break;
-                case FLOAT:
-                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, toFloat(condition[i].attributeValue), FLOAT);
+                }
+                case NOT_EQUAL:
+                {
+                    switch (type)
+                    {
+                        case INT:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toInt(condition[i].attributeValue), NOT_EQUAL);
+                            break;
+                        case FLOAT:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toFloat(condition[i].attributeValue), NOT_EQUAL);
+                            break;
+                        case CHAR:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, condition[i].attributeValue, NOT_EQUAL);
+                            break;
+                    }
                     break;
-                case CHAR:
-                    result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, condition[i].attributeValue, CHAR);
+                }
+                case GREATER:
+                {
+                    switch (type)
+                    {
+                        case INT:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toInt(condition[i].attributeValue), GREATER);
+                            break;
+                        case FLOAT:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toFloat(condition[i].attributeValue), GREATER);
+                            break;
+                        case CHAR:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, condition[i].attributeValue, GREATER);
+                            break;
+                    }
                     break;
-            }
-        }
+                }
+                case GREATER_EQUAL:
+                {
+                    switch (type)
+                    {
+                        case INT:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toInt(condition[i].attributeValue), GREATER_EQUAL);
+                            break;
+                        case FLOAT:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toFloat(condition[i].attributeValue), GREATER_EQUAL);
+                            break;
+                        case CHAR:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, condition[i].attributeValue, GREATER_EQUAL);
+                            break;
+                    }
+                    break;
+                }
+                case SMALLER:
+                {
+                    switch (type)
+                    {
+                        case INT:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toInt(condition[i].attributeValue), SMALLER);
+                            break;
+                        case FLOAT:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toFloat(condition[i].attributeValue), SMALLER);
+                            break;
+                        case CHAR:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, condition[i].attributeValue, SMALLER);
+                            break;
+                    }
+                    break;
+                }
+                case SMALLER_EQUAL:
+                {
+                    switch (type)
+                    {
+                        case INT:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toInt(condition[i].attributeValue), SMALLER_EQUAL);
+                            break;
+                        case FLOAT:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toFloat(condition[i].attributeValue), SMALLER_EQUAL);
+                            break;
+                        case CHAR:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, condition[i].attributeValue, SMALLER_EQUAL);
+                            break;
+                    }
+                    break;
+                }
+                case ALL:
+                {
+                    switch (type)
+                    {
+                        case INT:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toInt(condition[i].attributeValue), ALL);
+                            break;
+                        case FLOAT:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, toFloat(condition[i].attributeValue), ALL);
+                            break;
+                        case CHAR:
+                            result = recordmanager.select(catalogmanager.Vtable[tableIndex], condition[i].attribute, condition[i].attributeValue, ALL);
+                            break;
+                    }
+                    break;
+                }
+            }        }
     }
     return result;
 }

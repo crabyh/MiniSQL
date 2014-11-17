@@ -249,7 +249,7 @@ vector<string> Interpreter:: splitConditions(int firstpos, string input)
             conditions.push_back(substring.substr(last, index - last));
         }
     }
-    for(size_t i = 0; i > conditions.size(); ++i)
+    for(size_t i = 0; i < conditions.size(); ++i)
     {
         cout<<"condition: "<<conditions[i]<<endl;
     }
@@ -279,8 +279,11 @@ bool Interpreter:: parseCondition(vector<string> conditions)
         }
         Conditions tmpCondition;
         tmpCondition.attribute = subConditions[0];
+        cout<<subConditions[0]<<endl;
         tmpCondition.condition_type = judgeConditionType(subConditions[1]);
+        cout<<judgeConditionType(subConditions[1])<<endl;
         tmpCondition.attributeValue = subConditions[2];
+        cout<<subConditions[2]<<endl;
         condition.push_back(tmpCondition);
     }
     return true;
@@ -816,7 +819,7 @@ bool Interpreter::parseCommand(string input)
                         }
                         if(findNextToken(currentPosition, input) == "WHERE")
                         {
-                            if(!parseCondition(splitConditions(currentPosition, input)))
+                            if(parseCondition(splitConditions(currentPosition, input)) == false)
                             {
                                 outputHelp(WHEREERROR);
                                 return false;
@@ -944,7 +947,7 @@ bool Interpreter:: executeCommand()
             vector<Row> result;
              if(condition.size()>0)
              {
-             result = API.select(currentCommand.objectName[0], condition);
+                 result = API.select(currentCommand.objectName[0], condition);
              }
              else
                  result = API.select(currentCommand.objectName[0]);

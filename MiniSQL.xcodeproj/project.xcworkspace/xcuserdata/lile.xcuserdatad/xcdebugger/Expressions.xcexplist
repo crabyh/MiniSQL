@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "CatalogManager::findIndexAttri(std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;):CatalogManager.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "RecordManager::attriInRecord(Table&amp;, Row&amp;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;):RecordManager.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Interpreter::executeCommand():Interpreter.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "APIManager::select(std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;, std::__1::vector&lt;Conditions, std::__1::allocator&lt;Conditions&gt; &gt;&amp;):APIManager.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "tableIndex">
+            </PersistentString>
+            <PersistentString
+               value = "attributeIndex">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "APIManager::createIndex(std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt; &gt;):APIManager.cpp">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
