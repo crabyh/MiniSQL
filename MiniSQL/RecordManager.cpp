@@ -133,7 +133,7 @@ string RecordManager::attriInRecord(Table &table, Row &row, string attriName){
 
 //比较函数
 bool RecordManager::compare(string s, string condition, int CONDITION_TYPE){
-    cout << s << condition << endl;
+//    cout << s << condition << endl;
     switch (CONDITION_TYPE){
         case EQUAL:
             return s == condition;

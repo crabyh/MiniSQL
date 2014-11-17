@@ -168,8 +168,6 @@ bool APIManager:: insertValue(string tablename, vector<string> &row)
                 break;
             case CHAR:
                 charValue = row[i].substr(row[i].find_first_of("'")+1, row[i].find_last_of("'") - row[i].find_first_of("'") - 1);
-                cout<<"test insert charvalue"<<endl;
-                cout<<charValue<<endl;
                 add = recordmanager.insertValues(catalogmanager.Vtable[tableIndex], charValue);
                 break;
         }
@@ -557,7 +555,6 @@ bool APIManager:: isValidInt(string s)
 {
     int i = 0;
     s = s.substr(s.find(' ') + 1);
-    cout << s << endl;
     if(s.size() == 0 || s.size() > 11)
     {
         return false;
@@ -629,7 +626,6 @@ bool APIManager:: isValidFloat(string s)
 //默认不支持空值
 bool APIManager:: checkInsertNume(string tableName, vector<string> insert)
 {
-    cout << tableName << endl;
     int tableIndex = catalogmanager.findTable(tableName);
     int arrinum = catalogmanager.Vtable[tableIndex].attriNum;
     if((int)insert.size()!=arrinum)

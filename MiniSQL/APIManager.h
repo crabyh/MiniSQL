@@ -41,6 +41,5 @@ public:
     bool isValidFloat(string input);
     bool checkInsertType(string tableName, vector<string>insert);//检查输入格式是否正确
     bool checkInsertNume(string tableName, vector<string>insert);//检查输入个数是否超过属性个数
-    
 };
 #endif /* defined(__interpreter__APIManager__) */

@@ -10,6 +10,7 @@
 #include "PublicClass.h"
 #include "Interpreter.h"
 #include "myMacro.h"
+#include <ctime>
 Interpreter inter;
 
 int main(int argc, const char * argv[]) {
@@ -24,7 +25,11 @@ int main(int argc, const char * argv[]) {
         {
             if(inter.parseCommand(inter.originalInput))
             {
+                time_t t1, t2;
+                t1 = clock();
                 inter.executeCommand();
+                t2 = clock();
+                cout << (t2-t1) << endl;
             }
         }
         else

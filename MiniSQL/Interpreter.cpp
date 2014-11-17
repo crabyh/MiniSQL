@@ -166,11 +166,11 @@ vector<string> Interpreter:: readFile(string filename)
             fileCommands.pop_back();
         }
     }
-    cout<<"test read file:"<<endl;
-    for(size_t i = 0; i < fileCommands.size(); ++i)
-    {
-        cout<<fileCommands[i]<<endl;
-    }
+//    cout<<"test read file:"<<endl;
+//    for(size_t i = 0; i < fileCommands.size(); ++i)
+//    {
+//        cout<<fileCommands[i]<<endl;
+//    }
     return fileCommands;
 }
 
@@ -248,10 +248,10 @@ vector<string> Interpreter:: splitConditions(int firstpos, string input)
             conditions.push_back(substring.substr(last, index - last));
         }
     }
-    for(size_t i = 0; i < conditions.size(); ++i)
-    {
-        cout<<"condition: "<<conditions[i]<<endl;
-    }
+//    for(size_t i = 0; i < conditions.size(); ++i)
+//    {
+//        cout<<"condition: "<<conditions[i]<<endl;
+//    }
     return conditions;
 }
 
@@ -278,7 +278,7 @@ bool Interpreter:: parseCondition(vector<string> conditions)
         }
         Conditions tmpCondition;
         tmpCondition.attribute = subConditions[0];
-        cout<<subConditions[0]<<endl;
+//        cout<<subConditions[0]<<endl;
         tmpCondition.condition_type = judgeConditionType(subConditions[1]);
         //去掉字符串两端的引号
         if(subConditions[2].size()>2)
@@ -290,7 +290,7 @@ bool Interpreter:: parseCondition(vector<string> conditions)
                }
         }
         tmpCondition.attributeValue = subConditions[2];
-        cout<<"test delete \':"<<tmpCondition.attributeValue<<endl;
+//        cout<<"test delete \':"<<tmpCondition.attributeValue<<endl;
         condition.push_back(tmpCondition);
     }
     return true;
@@ -364,7 +364,7 @@ bool Interpreter:: parseCreateTable(vector<string> createtable)
             
             for(size_t j = 0; j < tokens.size(); ++j)
             {
-                cout<<j<<" "<<tokens[j]<<endl;
+//                cout<<j<<" "<<tokens[j]<<endl;
                 if(tokens[0] != "PRIMARY")
                 {
                     tmpattribute.name= tokens[0];

@@ -55,6 +55,7 @@ InnerNode::InnerNode(int leafDataLength)
     maxChildNum = maxKeyValueNum + 1;
     minChildNum = minKeyValueNum + 1;
     m_keyValues.resize(maxKeyValueNum);
+    m_children.resize(maxChildNum);
 }
 
 InnerNode::~InnerNode()
@@ -816,17 +817,20 @@ void IndexManager::traverse(Node * node, string fileName)
     }
     for (int i = 0; i < ((InnerNode *)node)->m_children.size(); ++i)
     {
-        if (((InnerNode *)node)->m_children[i]->m_nodeType != LEAF)
+        if (((InnerNode *)node)->m_children[i] != NULL)
         {
-            traverse(((InnerNode *)node)->m_children[i], fileName);
+            if (((InnerNode *)node)->m_children[i]->m_nodeType != LEAF)
+            {
+                traverse(((InnerNode *)node)->m_children[i], fileName);
+            }
+            bm.writeData(fileName,
+                          node->selfBlockNum * sizeof(*node),
+                          (char*)((InnerNode *)node)->m_children[i],
+                          sizeof(*(((InnerNode *)node)->m_children[i])),
+                          1);
+            ((InnerNode *)node)->m_children[i]->parentBlockNum = node->selfBlockNum; //set the block number to parent's block number
+            node->childrenBLockNums.push_back(((InnerNode *)node)->m_children[i]->selfBlockNum);
         }
-        bm.writeData(fileName,
-                      node->selfBlockNum * sizeof(*node),
-                      (char*)((InnerNode *)node)->m_children[i],
-                      sizeof(*(((InnerNode *)node)->m_children[i])),
-                      1);
-        ((InnerNode *)node)->m_children[i]->parentBlockNum = node->selfBlockNum; //set the block number to parent's block number
-        node->childrenBLockNums.push_back(((InnerNode *)node)->m_children[i]->selfBlockNum);
     }
     // write self 
     bm.writeData(fileName,
