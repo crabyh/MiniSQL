@@ -1,4 +1,4 @@
-    //
+//
 //  CatalogManager.cpp
 //  MiniSQL
 //
@@ -40,32 +40,36 @@ CatalogManager::CatalogManager(BufferManager &buffermanager):buffermanager(buffe
 //将table的信息从容器中写入到文
 CatalogManager:: ~CatalogManager()
 {   //需要先清理freelist?!
-    fstream  tableFile( "Catalog", ios::out|ios::binary|ios::app);
-    tableFile << tableNum << " ";       //写入catalogmanager
-    for (int i = 0; i < tableNum; i++)
-    {//写入table
-        tableFile << Vtable[i].name  << " "
-        <<  Vtable[i].blockNum << " "
-        <<  Vtable[i].recordNum << " "
-        <<  Vtable[i].attriNum << " "
-        <<  Vtable[i].eachRecordLength << " "
-        <<  Vtable[i].primaryKey << " "
-        <<  Vtable[i].freeNum << " "
-        <<  Vtable[i].firstRow << " "
-        <<  Vtable[i].freeList << " "
-        <<  Vtable[i].fileEnd << " "
-        <<  Vtable[i].curPtr << " ";
-        for(int j=0; j<Vtable[i].attriNum; j++)
-        {
-            tableFile << Vtable[i].attributes[j].name  << " "
-            << Vtable[i].attributes[j].indexName  << " "
-            << Vtable[i].attributes[j].type  << " "
-            << Vtable[i].attributes[j].length  << " "
-            << Vtable[i].attributes[j].isPrimaryKey  << " "
-            << Vtable[i].attributes[j].isUnique  << " ";
+    static bool write = false;
+    if(write == 0){
+        fstream  tableFile( "Catalog", ios::out|ios::binary);
+        tableFile << tableNum << " ";       //写入catalogmanager
+        for (int i = 0; i < tableNum; i++)
+        {//写入table
+            tableFile << Vtable[i].name  << " "
+            <<  Vtable[i].blockNum << " "
+            <<  Vtable[i].recordNum << " "
+            <<  Vtable[i].attriNum << " "
+            <<  Vtable[i].eachRecordLength << " "
+            <<  Vtable[i].primaryKey << " "
+            <<  Vtable[i].freeNum << " "
+            <<  Vtable[i].firstRow << " "
+            <<  Vtable[i].freeList << " "
+            <<  Vtable[i].fileEnd << " "
+            <<  Vtable[i].curPtr << " ";
+            for(int j=0; j<Vtable[i].attriNum; j++)
+            {
+                tableFile << Vtable[i].attributes[j].name  << " "
+                << Vtable[i].attributes[j].indexName  << " "
+                << Vtable[i].attributes[j].type  << " "
+                << Vtable[i].attributes[j].length  << " "
+                << Vtable[i].attributes[j].isPrimaryKey  << " "
+                << Vtable[i].attributes[j].isUnique  << " ";
+            }
         }
+        tableFile.close();
     }
-    tableFile.close();
+    write = true;
 }
 
 //下面2个函数一起初始化Table
@@ -121,7 +125,7 @@ bool CatalogManager::createIndex(string indexName, string tableName, string attr
                     return true;    //成功返回true
                 }
     return false;       //失败返回false
-                    
+    
 }
 
 //查询表
