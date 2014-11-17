@@ -154,7 +154,6 @@ vector<string> Interpreter:: readFile(string filename)
         {
             getline(inputfile, command, ';');
             //将command中的空白字符转化为空格
-            cout << command << endl;
             for(size_t i = 0; i < command.size(); ++i)
             {
                 if(command[i] == '\n'||command[i] == '\t')
@@ -276,7 +275,17 @@ bool Interpreter:: parseCondition(vector<string> conditions)
         Conditions tmpCondition;
         tmpCondition.attribute = subConditions[0];
         tmpCondition.condition_type = judgeConditionType(subConditions[1]);
+        //去掉字符串两端的引号
+        if(subConditions[2].size()>2)
+        {
+            size_t j = subConditions[2].size() - 1;
+            if(subConditions[2][0]== '\'' && subConditions[2][j]== '\'')
+               {
+                   subConditions[2] = subConditions[2].substr(1,j-1);
+               }
+        }
         tmpCondition.attributeValue = subConditions[2];
+        cout<<"test delete \':"<<tmpCondition.attributeValue<<endl;
         condition.push_back(tmpCondition);
     }
     return true;
@@ -922,7 +931,7 @@ bool Interpreter:: executeCommand()
             else
             {
                 int total;
-                if(condition.size())//带where从句
+                if(condition.size() > 0)//带where从句
                 {
                     total = API.deleteValue(currentCommand.objectName[0], condition);
                 }
@@ -974,10 +983,6 @@ bool Interpreter:: executeCommand()
                 cout<<"test originalInput after reading file"<<endl;
                 cout<<originalInput;
                 converseCase();
-                currentCommand.operation = -1;
-                currentCommand.objectType = -1;
-                currentCommand.objectName.clear();
-                insert.clear();
                 if(judgeCommandType(originalInput))
                 {
                     if(parseCommand(originalInput))
