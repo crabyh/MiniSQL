@@ -923,7 +923,7 @@ bool IndexManager::dropIndex(string indexName, string tableName)
 }
 
 // record select operation
-nodeData IndexManager::findEqualRecord(Attribute attribute, string attributeValue, Table & table)
+Row IndexManager::findEqualRecord(Attribute attribute, string attributeValue, Table & table)
 {
     nodeData filePointer;
     BPlusTree * btree = new BPlusTree(attribute.length);
@@ -933,7 +933,13 @@ nodeData IndexManager::findEqualRecord(Attribute attribute, string attributeValu
         btree->insertValue(attributeValues[i].recordValue, attributeValues[i]); // insert record and its pointer into leaves
     }
     filePointer = btree->findNodeData(attributeValue);
-    return filePointer; // start pointer of continuous field
+    char * a = bm.readData(table.name + ".table", (long)(filePointer.blockNum * BLOCKSIZE + filePointer.blockOffset));
+    Row row;
+    for (int i = 0; i < table.eachRecordLength; ++i)
+    {
+        row.value += a[i];
+    }
+    return row; // start pointer of continuous field
 }
 
 vector<Row> IndexManager::findRangeRecord(Attribute attri, string attriValue, Table & table, CONDITION_TYPE condType)

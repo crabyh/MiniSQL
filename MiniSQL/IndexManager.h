@@ -168,7 +168,7 @@ public:
     bool dropIndex(string indexName, string tableName);
     // select operation
     // return nodeData which contain filePtr to the record 
-    nodeData findEqualRecord(Attribute attribute, string attributeValue, Table & table);
+    Row findEqualRecord(Attribute attribute, string attributeValue, Table & table);
     vector<Row> findRangeRecord(Attribute attribute, string attributeValue, Table & table, CONDITION_TYPE condition);
 
     // maintain indices after insert, delete and update operation
