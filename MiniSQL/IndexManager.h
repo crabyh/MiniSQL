@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 #include <set>
 #include <cmath>
 #include <sstream>
@@ -153,7 +154,6 @@ class IndexManager
 {
 public:
     IndexManager(BufferManager &bm, CatalogManager &cm, RecordManager &rm);
-    ~IndexManager();
     
     // format int and float numbers in order to compare them in string
     // do nothing to string
@@ -174,10 +174,10 @@ public:
     // maintain indices after insert, delete and update operation
     void afterInsert(Attribute & attribute, string attributeValue, Table & table, FILEPTR addr);
     void afterDelete(Attribute & attribute, string attributeValue, Table & table, FILEPTR addr);
-    void afterUpdate(Attribute & attribute, string attributeValue, Table & table, FILEPTR addr);
     
     set<string> indexSet; // store all index(indexName)
-    set<BPlusTree *> btreeSet; // store all btree
+    set<BPlusTree*> btreeSet; // store all btree
+    map<string, BPlusTree*> btreeMap; // find b+ tree according to indexName
     BufferManager & bm;
     RecordManager & rm;
     CatalogManager & cm;

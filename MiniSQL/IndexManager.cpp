@@ -804,9 +804,6 @@ IndexManager::IndexManager(BufferManager &bm, CatalogManager &cm, RecordManager 
     indexSet.clear();
 }
 
-IndexManager::~IndexManager()
-{
-}
 
 // recursively traverse the tree and transfer the blocks
 void IndexManager::traverse(Node * node, string fileName)
@@ -847,7 +844,7 @@ vector<nodeData> IndexManager::findAttributeValues(string attribute, Table &tabl
     int size = 0, i = 0;
     for (table.AttriIt = table.attributes.begin(); i < attributeNum; table.AttriIt++, i++)
     {
-        size += sizeof(*table.AttriIt);
+        size += (*table.AttriIt).length;
     }
     vector<nodeData> attributeValues;
 //    for (int i = 0; i < table.attriNum; i++)
@@ -860,6 +857,8 @@ vector<nodeData> IndexManager::findAttributeValues(string attribute, Table &tabl
         if(fileAddr % BLOCKSIZE + table.eachRecordLength + 8 > BLOCKSIZE) // prevent reading cross-block
             fileAddr = BLOCKSIZE * (fileAddr / BLOCKSIZE + 1);
         newNodeData.recordValue = bm.readData(filename, fileAddr);
+        newNodeData.recordValue = newNodeData.recordValue.substr(0, table.AttriIt->length);
+        cout << newNodeData.recordValue << endl;
         newNodeData.blockNum = table.blockNum + fileAddr / BLOCKSIZE;
         newNodeData.blockOffset = fileAddr % BLOCKSIZE;
         newNodeData.isValid = true;
@@ -891,10 +890,11 @@ bool IndexManager::createIndex(string indexName, Table &table, string attributeN
             {
                 newtree->insertValue(attributeValues[i].recordValue, attributeValues[i]); // insert record and its pointer into leaves
             }
-            traverse((*--btreeSet.end())->m_root, filename); // transfer each block in the tree into the file
+            traverse((*(--btreeSet.end()))->m_root, filename); // transfer each block in the tree into the file
         }
         cm.createIndex(indexName, table.name, attributeName);
         indexSet.insert(indexName);
+        btreeMap[indexName] = newtree;
         return true;
     }
     else
@@ -926,14 +926,25 @@ bool IndexManager::dropIndex(string indexName, string tableName)
 Row IndexManager::findEqualRecord(Attribute attribute, string attributeValue, Table & table)
 {
     nodeData filePointer;
-    BPlusTree * btree = new BPlusTree(attribute.length);
-    vector<nodeData> attributeValues = findAttributeValues(attribute.name, table, table.name + ".table");
-    for (int i = 0; i < attributeValues.size(); ++i)
+    BPlusTree * btree;
+    if (btreeMap.find(attribute.indexName) == btreeMap.end())
+    { // no tree in map
+        btree = new BPlusTree(attribute.length);
+        vector<nodeData> attributeValues = findAttributeValues(attribute.name, table, table.name + ".table");
+        for (int i = 0; i < attributeValues.size(); ++i)
+        {
+            btree->insertValue(attributeValues[i].recordValue, attributeValues[i]); // insert record and its pointer into leaves
+        }
+    }
+    else
     {
-        btree->insertValue(attributeValues[i].recordValue, attributeValues[i]); // insert record and its pointer into leaves
+        btree = btreeMap[attribute.indexName];
     }
     filePointer = btree->findNodeData(attributeValue);
+//    Node * fileNode = btree->findNodeFor(attributeValue);
     char * a = bm.readData(table.name + ".table", (long)(filePointer.blockNum * BLOCKSIZE + filePointer.blockOffset));
+//    string s = a;
+//    s = s.substr(0, attribute.length);
     Row row;
     for (int i = 0; i < table.eachRecordLength; ++i)
     {
@@ -946,11 +957,19 @@ vector<Row> IndexManager::findRangeRecord(Attribute attri, string attriValue, Ta
 {
     vector<Row> results;
     vector<nodeData> filePointers;
-    BPlusTree * btree = new BPlusTree(attri.length);
-    vector<nodeData> attriValues = findAttributeValues(attri.name, table, table.name + ".table");
-    for (int i = 0; i < attriValues.size(); ++i)
+    BPlusTree * btree;
+    if (btreeMap.find(attri.indexName) == btreeMap.end())
     {
-        btree->insertValue(attriValues[i].recordValue, attriValues[i]);
+        btree = new BPlusTree(attri.length);
+        vector<nodeData> attriValues = findAttributeValues(attri.name, table, table.name + ".table");
+        for (int i = 0; i < attriValues.size(); ++i)
+        {
+            btree->insertValue(attriValues[i].recordValue, attriValues[i]);
+        }
+    }
+    else
+    {
+        btree = btreeMap[attri.indexName];
     }
     filePointers = btree->findRangeNodeData(btree->m_root, attriValue, condType); // find nodeData correspoding to required conditions
     vector<nodeData>::iterator iter = filePointers.begin();
@@ -969,12 +988,20 @@ vector<Row> IndexManager::findRangeRecord(Attribute attri, string attriValue, Ta
 
 void IndexManager::afterInsert(Attribute & attribute, string attributeValue, Table & table, FILEPTR addr)
 {
-    BPlusTree * btree = new BPlusTree(attribute.length);
+    BPlusTree * btree;
     nodeData recordPtr = transferAddrToNodeData(attribute, table, addr);
-    vector<nodeData> attributeValues = findAttributeValues(attribute.name, table, table.name + ".table");
-    for (int i = 0; i < attributeValues.size(); ++i)
+    if (btreeMap.find(attribute.indexName) == btreeMap.end())
     {
-        btree->insertValue(attributeValues[i].recordValue, attributeValues[i]); // insert record and its pointer into leaves
+        btree = new BPlusTree(attribute.length);
+        vector<nodeData> attributeValues = findAttributeValues(attribute.name, table, table.name + ".table");
+        for (int i = 0; i < attributeValues.size(); ++i)
+        {
+            btree->insertValue(attributeValues[i].recordValue, attributeValues[i]); // insert record and its pointer into leaves
+        }
+    }
+    else
+    {
+        btree = btreeMap[attribute.indexName];
     }
     if (!btree->search(attributeValue))  // if attributeValue is not stored
     {
@@ -985,28 +1012,23 @@ void IndexManager::afterInsert(Attribute & attribute, string attributeValue, Tab
 
 void IndexManager::afterDelete(Attribute & attribute, string attributeValue, Table & table, FILEPTR addr)
 {
-    BPlusTree * btree = new BPlusTree(attribute.length);
+    BPlusTree * btree;
     nodeData recordPtr = transferAddrToNodeData(attribute, table, addr);
-    vector<nodeData> attributeValues = findAttributeValues(attribute.name, table, table.name + ".table");
-    for (int i = 0; i < attributeValues.size(); ++i)
+    if (btreeMap.find(attribute.indexName) == btreeMap.end())
     {
-        btree->insertValue(attributeValues[i].recordValue, attributeValues[i]); // insert record and its pointer into leaves
+        btree = new BPlusTree(attribute.length);
+        vector<nodeData> attributeValues = findAttributeValues(attribute.name, table, table.name + ".table");
+        for (int i = 0; i < attributeValues.size(); ++i)
+        {
+            btree->insertValue(attributeValues[i].recordValue, attributeValues[i]); // insert record and its pointer into leaves
+        }
+    }
+    else
+    {
+        btree = btreeMap[attribute.name];
     }
     btree->remove(attributeValue, recordPtr);
     traverse(btree->m_root, attribute.indexName + ".idx");
-}
-
-void IndexManager::afterUpdate(Attribute & attribute, string attributeValue, Table & table, FILEPTR addr)
-{
-    BPlusTree * btree = new BPlusTree(attribute.length);
-    nodeData recordPtr = transferAddrToNodeData(attribute, table, addr);
-    vector<nodeData> attributeValues = findAttributeValues(attribute.name, table, table.name + ".table");
-    for (int i = 0; i < attributeValues.size(); ++i)
-    {
-        btree->insertValue(attributeValues[i].recordValue, attributeValues[i]); // insert record and its pointer into leaves
-    }
-    Node * oldNode = btree->findNodeFor(attributeValue);
-    btree->changeKey(oldNode, recordPtr.recordValue, attributeValue);
 }
 
 nodeData IndexManager::transferAddrToNodeData(Attribute &attri, Table &table, FILEPTR addr)
