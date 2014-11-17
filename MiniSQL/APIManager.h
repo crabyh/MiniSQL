@@ -29,6 +29,7 @@ public:
     
     vector<Row> select(string tablename);                                    //与record交互，获取表中信息
     vector<Row> select(string tablename, vector<Conditions>& condition);     //根据条件获取表中信息
+    void showResults(string tableName, vector<Row> row);
     
     int  deleteValue(string tablename);//与record和catalog交互，无条件删除表格数据：
                                        //调用record中的删除表格函数实现表格内容删除，调用index中的函数删除表格中索引项对应的索引
