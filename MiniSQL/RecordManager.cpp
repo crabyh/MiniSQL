@@ -34,15 +34,15 @@ FILEPTR RecordManager::insertValues(Table &table, string s){
         //插入一整条记录
         if(table.freeList == -1){       //freelist为空插入到文件尾
             
+            //防止跨块读取
+            if(table.fileEnd%BLOCKSIZE + table.eachRecordLength + 8 > BLOCKSIZE)
+                table.fileEnd = BLOCKSIZE*(table.fileEnd/BLOCKSIZE+1);
+            
             //更新上一条记录的指针
             if(old_row.value != ""){
                 old_row.ptr = table.fileEnd;
                 buffermanager.writeData(table.name+".table", table.dataEndPTR+table.eachRecordLength, (char*)&old_row.ptr, sizeof(row.ptr), 1);
             }
-            
-            //防止跨块读取
-            if(table.fileEnd%BLOCKSIZE + table.eachRecordLength > BLOCKSIZE)
-                table.fileEnd = BLOCKSIZE*(table.fileEnd/BLOCKSIZE+1);
             
             buffermanager.writeData(table.name+".table", table.fileEnd, row.value.c_str(), table.eachRecordLength, 1);
             table.fileEnd += table.eachRecordLength;
@@ -96,7 +96,7 @@ FILEPTR RecordManager::insertValues(Table &table, double f){
 //返回该地址的记录
 Row RecordManager::findRecord(Table &table, FILEPTR addr){
     Row &row = *new Row;
-    if(addr%BLOCKSIZE + table.eachRecordLength > BLOCKSIZE)
+    if(addr%BLOCKSIZE + table.eachRecordLength + 8 > BLOCKSIZE)
         addr = BLOCKSIZE*(table.curPtr/BLOCKSIZE+1);
     char* chptr=buffermanager.readData(table.name+".table", addr);
     for(int i=0;i<table.eachRecordLength;i++){
@@ -110,7 +110,7 @@ Row RecordManager::findRecord(Table &table, FILEPTR addr){
 Row RecordManager::nextRecord(Table &table){
     Row &row = *new Row;
     if(table.curPtr == -1) table.curPtr = table.firstRow;
-    if(table.curPtr%BLOCKSIZE + table.eachRecordLength > BLOCKSIZE)
+    if(table.curPtr%BLOCKSIZE + table.eachRecordLength + 8 > BLOCKSIZE)
         table.curPtr = BLOCKSIZE*(table.curPtr/BLOCKSIZE+1);
     char* chptr=buffermanager.readData(table.name+".table", table.curPtr);
     for(int i=0;i<table.eachRecordLength;i++){
@@ -306,7 +306,7 @@ int RecordManager::deleteRow(Table &table, string attriName, string condition,in
     for(int i=0;i<table.recordNum;i++){
         //row=nextRecord(table)
         if(table.curPtr == -1) table.curPtr = table.firstRow;
-        if(table.curPtr%BLOCKSIZE + table.eachRecordLength > BLOCKSIZE)
+        if(table.curPtr%BLOCKSIZE + table.eachRecordLength + 8 > BLOCKSIZE)
             table.curPtr = BLOCKSIZE*(table.curPtr/BLOCKSIZE+1);
         ptr = table.curPtr;
         char* chptr=buffermanager.readData(table.name+".table", table.curPtr);
@@ -356,7 +356,7 @@ int RecordManager::deleteRow(Table &table, string attriName, int condition,int C
     for(int i=0;i<table.recordNum;i++){
         //row=nextRecord(table)
         if(table.curPtr == -1) table.curPtr = table.firstRow;
-        if(table.curPtr%BLOCKSIZE + table.eachRecordLength > BLOCKSIZE)
+        if(table.curPtr%BLOCKSIZE + table.eachRecordLength + 8 > BLOCKSIZE)
             table.curPtr = BLOCKSIZE*(table.curPtr/BLOCKSIZE+1);
         ptr = table.curPtr;
         char* chptr=buffermanager.readData(table.name+".table", table.curPtr);
@@ -405,7 +405,7 @@ int RecordManager::deleteRow(Table &table, string attriName, double condition,in
     for(int i=0;i<table.recordNum;i++){
         //row=nextRecord(table)
         if(table.curPtr == -1) table.curPtr = table.firstRow;
-        if(table.curPtr%BLOCKSIZE + table.eachRecordLength > BLOCKSIZE)
+        if(table.curPtr%BLOCKSIZE + table.eachRecordLength + 8> BLOCKSIZE)
             table.curPtr = BLOCKSIZE*(table.curPtr/BLOCKSIZE+1);
         ptr = table.curPtr;
         char* chptr=buffermanager.readData(table.name+".table", table.curPtr);
@@ -453,7 +453,7 @@ int RecordManager::deleteAllRow(Table &table){
     for(int i=0;i<table.recordNum;i++){
         //row=nextRecord(table)
         if(table.curPtr == -1) table.curPtr = table.firstRow;
-        if(table.curPtr%BLOCKSIZE + table.eachRecordLength > BLOCKSIZE)
+        if(table.curPtr%BLOCKSIZE + table.eachRecordLength + 8> BLOCKSIZE)
             table.curPtr = BLOCKSIZE*(table.curPtr/BLOCKSIZE+1);
         ptr = table.curPtr;
         char* chptr=buffermanager.readData(table.name+".table", table.curPtr);
