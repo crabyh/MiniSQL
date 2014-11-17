@@ -843,8 +843,8 @@ bool Interpreter:: executeCommand()
                     return false;
                 }
                 string indexName = currentTable.primaryKey + "Index";
-                Table & table = API.creatTable(currentTable);
-                API.createIndex(indexName, table, currentTable.primaryKey);
+                API.creatTable(currentTable);
+                API.createIndex(indexName, currentTable.name, currentTable.primaryKey);
                 cout<<"The table has been created"<<endl;
                 break;}
             case INDEX:
