@@ -37,8 +37,8 @@ public:
                                        //如果成功，返回被删除表格的元组数目；失败返回－1
     int  deleteValue(string tablename, vector<Conditions>& condition); //根据条件删除表格
     
-    bool isValidInt(const string input);
-    bool isValidFloat(const string input);
+    bool isValidInt(string input);
+    bool isValidFloat(string input);
     bool checkInsertType(string tableName, vector<string>insert);//检查输入格式是否正确
     bool checkInsertNume(string tableName, vector<string>insert);//检查输入个数是否超过属性个数
     

@@ -344,8 +344,11 @@ void APIManager:: showResults(string tableName, vector<Row> row)
 }
 
 //总长度不超过11位
-bool APIManager:: isValidInt(const string s)
+bool APIManager:: isValidInt(string s)
 {
+    int i = 0;
+    s = s.substr(s.find(' ') + 1);
+    cout << s << endl;
     if(s.size() == 0 || s.size() > 11)
     {
         return false;
@@ -369,7 +372,7 @@ bool APIManager:: isValidInt(const string s)
 }
 
 //判断字符串中是否有数字之外字符（首位负号除外）；判断字符串中小数点数量是否超过1；判断小数点之前是否超过33位
-bool APIManager:: isValidFloat(const string s)
+bool APIManager:: isValidFloat(string s)
 {
     int count = 0;
     if(s.size() == 0)
@@ -417,6 +420,7 @@ bool APIManager:: isValidFloat(const string s)
 //默认不支持空值
 bool APIManager:: checkInsertNume(string tableName, vector<string> insert)
 {
+    cout << tableName << endl;
     int tableIndex = catalogmanager.findTable(tableName);
     int arrinum = catalogmanager.Vtable[tableIndex].attriNum;
     if((int)insert.size()!=arrinum)
@@ -435,12 +439,12 @@ bool APIManager:: checkInsertType(string tableName, vector<string> insert)
     {
         attrType = catalogmanager.Vtable[tableIndex].attributes[i].type;
         switch (attrType) {
-            case INT:
+            case 0: // int
                 if (!isValidInt(insert[i])) {
                     return false;
                 }
                 break;
-            case FLOAT:
+            case 2: // float
                 if (!isValidFloat(insert[i])) {
                     return false;
                 }
