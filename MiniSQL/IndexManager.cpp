@@ -803,11 +803,6 @@ IndexManager::IndexManager(BufferManager &bm, CatalogManager &cm, RecordManager 
     indexSet.clear();
 }
 
-//IndexManager::IndexManager()
-//{
-//    indexSet.clear();
-//}
-
 IndexManager::~IndexManager()
 {
 }

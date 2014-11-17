@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Myh. All rights reserved.
 //
 
+#include "BufferManager.h"
 #include "CatalogManager.h"
 #include "PublicClass.h"
-#include "BufferManager.h"
 
 //初始化catalogmanager并从file中读取元数据
 CatalogManager::CatalogManager(BufferManager &buffermanager):buffermanager(buffermanager)

@@ -14,8 +14,8 @@
 class APIManager
 {
 public:
-    //APIManager();
-   // ~APIManager();
+    APIManager();
+    ~APIManager();
     
     bool existTable(string tableName);//与catalog交互，返回表是否存在，1表示存在，0表示不存在
     bool existIndex(string indexName);//与catalog交互，判断某一索引名是否存在，存在则返回表的序号，否则－1
@@ -32,7 +32,6 @@ public:
     
     vector<Row> select(string tablename);                                    //与record交互，获取表中信息
     vector<Row> select(string tablename, vector<Conditions>& condition);     //根据条件获取表中信息
-    void showResults(string tableName, vector<Row> row);
     
     int  deleteValue(string tablename);//与record和catalog交互，无条件删除表格数据：
                                        //调用record中的删除表格函数实现表格内容删除，调用index中的函数删除表格中索引项对应的索引

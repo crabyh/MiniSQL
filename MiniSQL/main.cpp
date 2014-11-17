@@ -22,16 +22,16 @@ int main(int argc, const char * argv[]) {
         inter.converseCase();
         if(inter.judgeCommandType(inter.originalInput))
         {
-            if(inter.parseCommand(inter.originalInput))
+            /*if(inter.parseCommand(inter.originalInput))
             {
                 inter.executeCommand();
-            }
-//            inter.parseCommand(inter.originalInput);
+            }*/
+            inter.parseCommand(inter.originalInput);
         }
         else
         inter.outputHelp(UNKNOWN);
         inter.test();
     }
-    
+        
     return 0;
 }

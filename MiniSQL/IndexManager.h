@@ -15,12 +15,11 @@
 #include <cmath>
 #include <sstream>
 #include <fstream>
-#include <cstdio>
 #include "PublicClass.h"
+#include <cstdio>
 #include "RecordManager.h"
 #include "BufferManager.h"
 #include "CatalogManager.h"
-
 
 using namespace std;
 
@@ -153,8 +152,8 @@ public:
 class IndexManager
 {
 public:
+    IndexManager();
     IndexManager(BufferManager &bm, CatalogManager &cm, RecordManager &rm);
-//    IndexManager();
     ~IndexManager();
     
     // format int and float numbers in order to compare them in string

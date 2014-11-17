@@ -13,8 +13,6 @@
 #include "BufferManager.h"
 #include "CatalogManager.h"
 
-
-
 class RecordManager{
     BufferManager &buffermanager;
     CatalogManager &catalogmanager;

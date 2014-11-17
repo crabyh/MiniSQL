@@ -7,9 +7,24 @@
 //
 
 #include "Interpreter.h"
-
+#include "myMacro.h"
+#include "PublicClass.h"
+#include "APIManager.h"
+#include <iostream>
+#include <algorithm>
+#include <sstream>
+#include <fstream>
 using namespace std;
 APIManager API;
+
+Interpreter::Interpreter()
+{
+
+}
+
+Interpreter::~Interpreter()
+{
+}
 
 void Interpreter:: init()
 {
@@ -828,7 +843,7 @@ bool Interpreter::parseCommand(string input)
     return true;
 }
 
-bool Interpreter::executeCommand()
+bool Interpreter:: executeCommand()
 {
     switch (currentCommand.operation)
     {
@@ -836,8 +851,7 @@ bool Interpreter::executeCommand()
             switch (currentCommand.objectType)
         {
             case TABLE:
-            {
-                if(API.existTable(currentTable.name))//如果这张表已经存在
+            {if(API.existTable(currentTable.name))//如果这张表已经存在
                 {
                     outputHelp(SAMETABLE);
                     return false;
@@ -851,8 +865,7 @@ bool Interpreter::executeCommand()
                 API.creatTable(currentTable);
                 API.createIndex(indexName, currentTable.name, currentTable.primaryKey);
                 cout<<"The table has been created"<<endl;
-                break;
-            }
+                break;}
             case INDEX:
                 if(API.existTable(currentTable.name) == false)//表不存在
                 {
@@ -929,14 +942,12 @@ bool Interpreter::executeCommand()
                 return false;
             }
             vector<Row> result;
-            if(condition.size())
-            {
-                result = API.select(currentCommand.objectName[0], condition);
-            }
-            else
-            {
-                result = API.select(currentCommand.objectName[0]);
-            }
+             if(condition.size())
+             {
+             result = API.select(currentCommand.objectName[0]);
+             }
+             else
+             result = API.select(currentCommand.objectName[0], condition);
             for(size_t i = 0; i < result.size(); ++i)//暂时这样写
             {
                 cout<<result[i].value<<endl;
