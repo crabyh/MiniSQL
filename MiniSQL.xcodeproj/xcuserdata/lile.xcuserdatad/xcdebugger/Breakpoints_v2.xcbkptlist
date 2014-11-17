@@ -47,7 +47,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "212"
             endingLineNumber = "212"
-            landmarkName = "APIManager::select(string tablename)"
+            landmarkName = "APIManager:: insertValue(string tablename, vector&lt;string&gt; &amp;row)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
