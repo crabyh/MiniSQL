@@ -7,7 +7,12 @@
 //
 
 #include "APIManager.h"
-
+#include "CatalogManager.h"
+#include "IndexManager.h"
+#include "RecordManager.h"
+#include "BufferManager.h"
+#include "PublicClass.h"
+#include "myMacro.h"
 
 
 BufferManager buffermanager;
@@ -19,7 +24,7 @@ IndexManager indexmanager(buffermanager, catalogmanager, recordmanager);
 //与catalog交互，返回表是否存在，1表示存在，0表示不存在
 bool APIManager:: existTable(string tableName)
 {
-    if(catalogmanager.findTable(tableName) != -1)
+    if(catalogmanager.findTable(tableName)!=-1)
         return true;
     else
         return false;
@@ -61,10 +66,10 @@ bool APIManager:: isUnique(string tableName, string attriName)
 //与catalog模块交互建表
 Table APIManager:: creatTable(Table &table)
 {
-    Table & tempTable =  catalogmanager.createTable(table.name, table.primaryKey);
+    catalogmanager.createTable(table.name, table.primaryKey);
     for(size_t i = 0; i < table.attributes.size(); ++i)
     {
-        catalogmanager.insertAttri(tempTable, table.attributes[i].name, table.attributes[i].type, table.attributes[i].length);
+        catalogmanager.insertAttri(table, table.attributes[i].name, table.attributes[i].type, table.attributes[i].length);
         if (table.primaryKey == table.attributes[i].name) // if attribute is primary key 
         {
             table.attributes[i].isPrimaryKey = true;
@@ -111,7 +116,7 @@ int APIManager:: deleteValue(string tablename)
 //在interpreter中检测table是否存在
 //与rm交互，根据条件删除表中数据
 //与im交互删除index（如果存在）
-int APIManager::deleteValue(string tablename, vector<Conditions> &condition)
+int APIManager:: deleteValue(string tablename, vector<Conditions> &condition)
 {
     //Table table;
     int total = 0;
@@ -202,7 +207,7 @@ vector<Row> APIManager::select(string tablename)
 
 //在interpreter中检测table是否存在
 //与record交互，根据条件获取表中信息
-vector<Row> APIManager::select(string tablename, vector<Conditions>& condition)
+vector<Row> APIManager:: select(string tablename, vector<Conditions>& condition)
 {
     int tableIndex = catalogmanager.findTable(tablename);
     vector<Row> result;
@@ -238,6 +243,83 @@ vector<Row> APIManager::select(string tablename, vector<Conditions>& condition)
         }
     }
     return result;
+}
+
+void APIManager:: showResults(string tableName, vector<Row> row)
+{
+    int tableIndex = catalogmanager.findTable(tableName);
+    int currentMaxLength = 0;//当前属性的名字和值中更长的一个
+    vector<int> max;
+    //输出表格最上面一行
+    cout<<"+";
+    for(size_t i = 0; i < catalogmanager.Vtable[tableIndex].attributes.size(); ++i)
+    {
+        if (catalogmanager.Vtable[tableIndex].attributes[i].length > catalogmanager.Vtable[tableIndex].attributes[i].name.length())
+        {
+            currentMaxLength = catalogmanager.Vtable[tableIndex].attributes[i].length;
+        }
+        else
+            currentMaxLength = (int)catalogmanager.Vtable[tableIndex].attributes[i].name.length();
+        max.push_back(currentMaxLength);
+        for(int j = 0; j < currentMaxLength + 1; j++)
+        {
+            cout << "_";
+        }
+        cout << "+";
+    }
+    cout << endl;
+    cout << "| ";//第二行最左侧的竖线
+    int leftLength = 0;//剩下的空格长度
+    //输出属性名
+    for(size_t i = 0; i < catalogmanager.Vtable[tableIndex].attributes.size(); ++i)
+    {
+        leftLength = max[i] - (int)((catalogmanager.Vtable[tableIndex].attributes[i].name).size());
+        cout<<catalogmanager.Vtable[tableIndex].attributes[i].name;
+        for(int j = 0; j < leftLength; ++j)
+        {
+            cout<<" ";
+        }
+        cout<<"|";
+    }
+    cout<<endl;
+    cout<<"+";
+    //输出属性名下边框
+    for(size_t i = 0; i < catalogmanager.Vtable[tableIndex].attributes.size(); ++i)
+    {
+        for(int j = 0; j < max[i]; ++j)
+        {
+            cout<<"_";
+        }
+        cout<<"+";
+    }
+    cout<<endl;
+    //逐行输出数据
+    string value;
+    for(size_t i = 0; i < row.size(); ++i)//行
+    {
+        cout<<"|";//左侧边框
+        for(int j = 0; j < catalogmanager.Vtable[tableIndex].attriNum; ++j)//列
+        {
+            value = recordmanager.attriInRecord(catalogmanager.Vtable[tableIndex], row[i], catalogmanager.Vtable[tableIndex].attributes[j].name);
+            leftLength = max[j] - (int)value.size();
+            cout<<value;
+            for(int k = 0; k < leftLength; ++k)
+            {
+                cout<<" ";
+            }
+            cout<<"|";
+        }
+        //输出每一行下边框
+        cout<<"+";
+        for(int j = 0; j < catalogmanager.Vtable[tableIndex].attriNum; ++j)
+        {
+            for(int k = 0; k < max[j]; ++k)
+            {
+                cout<<"_";
+            }
+            cout<<"+";
+        }
+    }
 }
 
 //总长度不超过11位

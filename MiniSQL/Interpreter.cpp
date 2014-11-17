@@ -11,14 +11,6 @@
 using namespace std;
 APIManager API;
 
-Interpreter::Interpreter()
-{
-}
-
-Interpreter::~Interpreter()
-{
-}
-
 void Interpreter:: init()
 {
     quitflag = false;
