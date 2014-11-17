@@ -117,7 +117,7 @@ bool Interpreter:: isValidFloat(const string s)
 
 void Interpreter:: getInput()
 {
-    cout<<"MINISQL:<< ";
+    cout<<"minisql:<< ";
     originalInput.clear();
     string tmpSentence;
     getline(cin,tmpSentence);

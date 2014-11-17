@@ -103,7 +103,16 @@ bool APIManager:: dropIndex(string indexName)
 //与catalog，index交互，删除索引；与catalog和record交互，删除表格数据
 bool APIManager:: dropTable(string tableName)
 {
-    return catalogmanager.dropTable(tableName);
+    int tableIndex = catalogmanager.findTable(tableName);
+    for(int i = 0; i < catalogmanager.Vtable[tableIndex].attriNum; ++i)
+    {
+        if(catalogmanager.Vtable[tableIndex].attributes[i].indexName != "NULL")
+        {
+            indexmanager.dropIndex(catalogmanager.Vtable[tableIndex].attributes[i].name, tableName);
+        }
+    }
+    catalogmanager.dropTable(tableName);
+    return true;
 }
 
 //在interpreter中检测table是否存在
@@ -201,11 +210,8 @@ vector<Row> APIManager::select(string tablename)
 {
     int tableIndex = catalogmanager.findTable(tablename);
     vector<Row> result;
-    result = recordmanager.selectAll(catalogmanager.Vtable[tableIndex]);
-    /*for(size_t i = 0; i < recordmanager.selectAll(catalogmanager.Vtable[tableIndex]).size(); ++i)
-    {
-        result.push_back(recordmanager.selectAll(catalogmanager.Vtable[tableIndex])[i]);
-    }*/
+    //result = recordmanager.selectAll(catalogmanager.Vtable[tableIndex]);
+    int primaryKeyIndex = catalogmanager.getAttriNum(catalogmanager.Vtable[tableIndex], catalogmanager.Vtable[tableIndex].primaryKey);
     return result;
 }
 
