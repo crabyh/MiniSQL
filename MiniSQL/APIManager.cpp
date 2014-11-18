@@ -830,7 +830,6 @@ bool APIManager:: uniqueValue(string tableName, vector<string> &row)
                         currentValue= currentValue.substr(0,currentValue.find_first_of(' '));
                         break;
                 }
-                cout<<"test compare:"<<currentValue<<" "<<row[i]<<endl;
                 if(currentValue == row[i])
                 {
                     return false;

@@ -432,7 +432,7 @@ nodeData BPlusTree::recursive_findNodeData(Node * pNode, KeyType key)
         nodeData invalid;
         invalid.isValid = false;
     
-        if (keyIndex < pNode->m_keyNum && key == pNode->m_keyValues[keyIndex])
+        if (keyIndex < pNode->m_keyNum && key == trim(pNode->m_keyValues[keyIndex]))
             return ((LeafNode *)pNode)->m_data[keyIndex];
         else
         {
@@ -847,25 +847,24 @@ vector<nodeData> IndexManager::findAttributeValues(string attribute, Table &tabl
         size += (*table.AttriIt).length;
     }
     vector<nodeData> attributeValues;
-//    for (int i = 0; i < table.attriNum; i++)
+    long fileAddr = table.firstRow;
     for (int i = 0; i < table.recordNum; i++)
     {
         nodeData newNodeData;
-        // table.eachRecordLength equals to the length of all attributes
-        // thus i * length represents ith row, 1 * length represents length of all attributes
-        long fileAddr = (table.eachRecordLength + 8) * i + size;
+        Row row = rm.nextRecord(table);
+        string record = rm.attriInRecord(table, row, attribute);
+        newNodeData.recordValue = record;
         if(fileAddr % BLOCKSIZE + table.eachRecordLength + 8 > BLOCKSIZE) // prevent reading cross-block
             fileAddr = BLOCKSIZE * (fileAddr / BLOCKSIZE + 1);
-        newNodeData.recordValue = bm.readData(filename, fileAddr);
-        newNodeData.recordValue = newNodeData.recordValue.substr(0, table.AttriIt->length);
-        cout << newNodeData.recordValue << endl;
         newNodeData.blockNum = table.blockNum + fileAddr / BLOCKSIZE;
         newNodeData.blockOffset = fileAddr % BLOCKSIZE;
         newNodeData.isValid = true;
         newNodeData.indexName = table.name + "-" + attribute; // indexName is named after this convention
         newNodeData.tableName = table.name;
         attributeValues.push_back(newNodeData);
+        fileAddr = row.ptr;
     }
+//    rm.nextRecord(table);
     return attributeValues;
 }
 
@@ -941,15 +940,11 @@ Row IndexManager::findEqualRecord(Attribute attribute, string attributeValue, Ta
         btree = btreeMap[attribute.indexName];
     }
     filePointer = btree->findNodeData(attributeValue);
-//    Node * fileNode = btree->findNodeFor(attributeValue);
-    char * a = bm.readData(table.name + ".table", (long)(filePointer.blockNum * BLOCKSIZE + filePointer.blockOffset));
-//    string s = a;
-//    s = s.substr(0, attribute.length);
     Row row;
-    for (int i = 0; i < table.eachRecordLength; ++i)
-    {
-        row.value += a[i];
-    }
+//    Node * fileNode = btree->findNodeFor(attributeValue);
+    long addr = filePointer.blockOffset + filePointer.blockNum * BLOCKSIZE;
+    row = rm.findRecord(table, addr);
+    cout << row.value << endl;
     return row; // start pointer of continuous field
 }
 
