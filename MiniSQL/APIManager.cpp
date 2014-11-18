@@ -485,6 +485,8 @@ vector<Row> APIManager::select(string tablename, vector<Conditions>& condition)
     {
         for(size_t i = 1; i < condition.size(); ++i)
         {
+            attributeIndex = catalogmanager.getAttriNum(catalogmanager.Vtable[tableIndex], condition[i].attribute);
+            type = catalogmanager.Vtable[tableIndex].attributes[attributeIndex].type;
             conditionType = condition[i].condition_type;
             switch (conditionType)
             {
@@ -494,6 +496,7 @@ vector<Row> APIManager::select(string tablename, vector<Conditions>& condition)
                     {
                         case INT:
                             result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, toInt(condition[i].attributeValue), EQUAL);
+
                             break;
                         case FLOAT:
                             result = recordmanager.select(catalogmanager.Vtable[tableIndex], result, condition[i].attribute, toFloat(condition[i].attributeValue), EQUAL);
