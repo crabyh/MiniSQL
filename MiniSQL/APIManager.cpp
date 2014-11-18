@@ -78,13 +78,6 @@ Table & APIManager:: creatTable(Table &table)
     for(size_t i = 0; i < table.attributes.size(); ++i)
     {
         catalogmanager.insertAttri(tempTable, table.attributes[i].name, table.attributes[i].type, table.attributes[i].length, table.attributes[i].isPrimaryKey, table.attributes[i].isUnique);
-        /*if (table.primaryKey == table.attributes[i].name) // if attribute is primary key
-        {
-            (catalogmanager.Vtable.back()).attributes[i].isPrimaryKey = true;
-            (catalogmanager.Vtable.back()).attributes[i].isUnique = true;
-        }*/
-        
-
     }    
     return catalogmanager.Vtable.back();
 }
@@ -137,7 +130,8 @@ int APIManager:: deleteValue(string tablename)
     {
         if(catalogmanager.Vtable[tableIndex].attributes[i].indexName != "NULL")
         {
-            indexmanager.afterDelete(catalogmanager.Vtable[tableIndex].attributes[i], <#string attributeValue#>, <#Table &table#>, <#long addr#>);
+            if(catalogmanager.Vtable[tableIndex].attributes[i].type != )//CHAR
+            indexmanager.afterDelete(catalogmanager.Vtable[tableIndex].attributes[i], format(catalogmanager.Vtable[tableIndex].attributes[i].), )
         }
     }*/
     return total;
@@ -148,19 +142,29 @@ int APIManager:: deleteValue(string tablename)
 //与im交互删除index（如果存在）
 int APIManager:: deleteValue(string tablename, vector<Conditions> &condition)
 {
-    //Table table;
     int total = 0;
     int tableIndex = catalogmanager.findTable(tablename);
-    //table = catalogmanager.Vtable[i];
     for(size_t i =0; i < condition.size(); ++i)
     {
-        //判断条件中的属性名在表格中是否存在
-        /*if (catalogmanager.getAttriNum(catalogmanager.Vtable[tableIndex], condition[i].attribute) == -1)
-        {
-            
-            return -1;
-        }*/
         total += recordmanager.deleteRow(catalogmanager.Vtable[tableIndex], condition[i].attribute, condition[i].attributeValue, condition[i].condition_type);
+    }
+    for(size_t i = 0; i <  condition.size(); ++i)
+    {
+        int attriNum = catalogmanager.getAttriNum(catalogmanager.Vtable[tableIndex], condition[i].attribute);
+        if(catalogmanager.Vtable[tableIndex].attributes[attriNum].indexName != "NULL")
+        {
+            switch (catalogmanager.Vtable[tableIndex].attributes[attriNum].type) {
+                case INT:
+                    indexmanager.afterDelete(catalogmanager.Vtable[tableIndex].attributes[attriNum], format(toInt(condition[i].attributeValue)), catalogmanager.Vtable[tableIndex]);
+                    break;
+                case FLOAT:
+                    indexmanager.afterDelete(catalogmanager.Vtable[tableIndex].attributes[attriNum], format(toFloat(condition[i].attributeValue)), catalogmanager.Vtable[tableIndex]);
+                    break;
+                case CHAR:
+                    indexmanager.afterDelete(catalogmanager.Vtable[tableIndex].attributes[attriNum], condition[i].attributeValue, catalogmanager.Vtable[tableIndex]);
+                    break;
+            }
+        }
     }
     return total;
 }

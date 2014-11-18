@@ -869,10 +869,9 @@ bool Interpreter:: executeCommand()
                     outputHelp(NOPRIKEY);
                     return false;
                 }
-//                string indexName = currentTable.primaryKey + "Index";
-                string indexName = currentTable.name + "-" + currentTable.primaryKey;
+                //string indexName = currentTable.name + "-" + currentTable.primaryKey;
                 API.creatTable(currentTable);
-                API.createIndex(indexName, currentTable.name, currentTable.primaryKey);
+                //API.createIndex(indexName, currentTable.name, currentTable.primaryKey);
 
                 cout<<"The table has been created"<<endl;
                 break;}
