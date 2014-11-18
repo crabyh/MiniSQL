@@ -29,7 +29,7 @@ int main(int argc, const char * argv[]) {
                 t1 = clock();
                 inter.executeCommand();
                 t2 = clock();
-                cout << (t2-t1) << endl;
+                cout << "Time: " <<t2-t1<< endl;
             }
         }
         else
