@@ -1028,6 +1028,26 @@ void IndexManager::afterDelete(Attribute & attribute, string attributeValue, Tab
     traverse(btree->m_root, attribute.indexName + ".idx");
 }
 
+void IndexManager::afterDelete(Attribute & attribute, string attributeValue, Table & table)
+{
+    BPlusTree * btree;
+    if (btreeMap.find(attribute.indexName) == btreeMap.end())
+    {
+        btree = new BPlusTree(attribute.length);
+        vector<nodeData> attributeValues = findAttributeValues(attribute.name, table, table.name + ".table");
+        for (int i = 0; i < attributeValues.size(); ++i)
+        {
+            btree->insertValue(attributeValues[i].recordValue, attributeValues[i]); // insert record and its pointer into leaves
+        }
+    }
+    else
+    {
+        btree = btreeMap[attribute.name];
+    }
+    btree->deleteValue(attributeValue);
+    traverse(btree->m_root, attribute.indexName + ".idx");
+}
+
 nodeData IndexManager::transferAddrToNodeData(Attribute &attri, Table &table, FILEPTR addr)
 {
     nodeData recordPtr;

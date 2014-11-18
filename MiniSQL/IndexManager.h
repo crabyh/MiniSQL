@@ -166,6 +166,7 @@ public:
     // public API
     bool createIndex(string indexName, Table &table, string attributeName, int maxLength);
     bool dropIndex(string indexName, string tableName);
+    
     // select operation
     // return nodeData which contain filePtr to the record 
     Row findEqualRecord(Attribute attribute, string attributeValue, Table & table);
@@ -174,6 +175,7 @@ public:
     // maintain indices after insert, delete and update operation
     void afterInsert(Attribute & attribute, string attributeValue, Table & table, FILEPTR addr);
     void afterDelete(Attribute & attribute, string attributeValue, Table & table, FILEPTR addr);
+    void afterDelete(Attribute & attribute, string attributeValue, Table & table);
     
     set<string> indexSet; // store all index(indexName)
     set<BPlusTree*> btreeSet; // store all btree
