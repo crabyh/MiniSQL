@@ -483,35 +483,37 @@ vector<nodeData> BPlusTree::findRangeNodeData(Node * pNode, KeyType key, CONDITI
             }
             case GREATER:
             {
-                LeafNode * iter = m_dataHead;
-                while (iter->selfBlockNum < pNode->selfBlockNum) {
-                    iter++;
+                LeafNode * iter = (LeafNode *)((InnerNode *)m_root)->m_children[0];
+                int i = 0;
+                while (iter->selfBlockNum < pNode->selfBlockNum)
+                {
+                    ++i;
+                    iter = (LeafNode *)((InnerNode *)m_root)->m_children[i];
                 }  // skip to the block which contains the key
-                for (int i = iter->m_keyNum ; i > keyindex; --i) {
-                    results.push_back(((LeafNode *)pNode)->m_data[i]);
-                } // push_back rest value of this block
                 while (iter != NULL) { // push_back rest blocks' values
-                    for (int i = 0; i > iter->m_keyNum; ++i)
+                    for (int i = keyindex + 1; i < iter->m_keyNum; ++i)
                     {
                         results.push_back(iter->m_data[i]);
                     }
+                    iter = (LeafNode *)((InnerNode *)m_root)->m_children[++i];
                 }
                 break;
             }
             case GREATER_EQUAL:
             {
-                LeafNode * iter = m_dataHead;
-                while (iter->selfBlockNum < pNode->selfBlockNum) {
-                    iter++;
+                LeafNode * iter = (LeafNode *)((InnerNode *)m_root)->m_children[0];
+                int i = 0;
+                while (iter->selfBlockNum < pNode->selfBlockNum)
+                {
+                    ++i;
+                    iter = (LeafNode *)((InnerNode *)m_root)->m_children[i];
                 }  // skip to the block which contains the key
-                for (int i = iter->m_keyNum ; i >= keyindex; --i) {
-                    results.push_back(((LeafNode *)pNode)->m_data[i]);
-                } // push_back rest value of this block
                 while (iter != NULL) { // push_back rest blocks' values
-                    for (int i = 0; i > iter->m_keyNum; ++i)
+                    for (int i = keyindex; i < iter->m_keyNum; ++i)
                     {
                         results.push_back(iter->m_data[i]);
                     }
+                    iter = (LeafNode *)((InnerNode *)m_root)->m_children[++i];
                 }
                 break;
             }
