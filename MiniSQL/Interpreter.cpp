@@ -722,7 +722,7 @@ bool Interpreter::parseCommand(string input)
                     {
                         currentCommand.objectName.push_back(objname);
                         currentCommand.objectType = TABLE;
-                        currentTable.name = currentCommand.objectName[0];
+                        //currentTable.name = currentCommand.objectName[0];
                     }
                     else
                     {
@@ -911,7 +911,7 @@ bool Interpreter:: executeCommand()
             switch (currentCommand.objectType)
         {
             case TABLE:
-                if(API.existTable(currentTable.name)==false)//如果这张表不存在
+                if(API.existTable(currentCommand.objectName[0])==false)//如果这张表不存在
                 {
                     outputHelp(TABLEERROR);
                     return false;
@@ -933,7 +933,7 @@ bool Interpreter:: executeCommand()
         }
             break;
         case DELETE:
-            if(API.existTable(currentTable.name)==false)//如果这张表不存在
+            if(API.existTable(currentCommand.objectName[0])==false)//如果这张表不存在
             {
                 outputHelp(TABLEERROR);
                 return false;
@@ -952,7 +952,7 @@ bool Interpreter:: executeCommand()
             }
             break;
         case SELECT:
-        {if(API.existTable(currentTable.name)==false)//如果这张表不存在
+        {if(API.existTable(currentCommand.objectName[0])==false)//如果这张表不存在
             {
                 outputHelp(TABLEERROR);
                 return false;
@@ -967,7 +967,7 @@ bool Interpreter:: executeCommand()
             API.showResults(currentCommand.objectName[0], result);
             break;}
         case INSERT:
-            if(API.existTable(currentTable.name)==false)//如果这张表不存在
+            if(API.existTable(currentCommand.objectName[0].name)==false)//如果这张表不存在
             {
                 outputHelp(TABLEERROR);
                 return false;
