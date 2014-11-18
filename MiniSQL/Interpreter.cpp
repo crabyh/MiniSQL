@@ -20,6 +20,10 @@ APIManager API;
 
 void Interpreter:: init()
 {
+    static bool ini = false;
+    if(ini==false)
+        cout<<"Wlecome to MiniSQL"<<endl<<"Sever version 0.0.1"<<endl<<endl<<"Copyright (c) 2014, 2014, Crab, Liliao, Starclam. All rights reserved."<<endl<<endl;
+    ini=true;
     quitflag = false;
     currentPosition = 0;
     primaryKeyPosition = -1;
@@ -117,7 +121,7 @@ bool Interpreter:: isValidFloat(const string s)
 
 void Interpreter:: getInput()
 {
-    cout<<"minisql:<< ";
+    cout<<"minisql> ";
     originalInput.clear();
     string tmpSentence;
     getline(cin,tmpSentence);
