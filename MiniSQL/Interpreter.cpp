@@ -170,11 +170,6 @@ vector<string> Interpreter:: readFile(string filename)
             fileCommands.pop_back();
         }
     }
-//    cout<<"test read file:"<<endl;
-//    for(size_t i = 0; i < fileCommands.size(); ++i)
-//    {
-//        cout<<fileCommands[i]<<endl;
-//    }
     return fileCommands;
 }
 
