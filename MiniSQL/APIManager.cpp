@@ -146,7 +146,18 @@ int APIManager:: deleteValue(string tablename, vector<Conditions> &condition)
     int tableIndex = catalogmanager.findTable(tablename);
     for(size_t i =0; i < condition.size(); ++i)
     {
-        total += recordmanager.deleteRow(catalogmanager.Vtable[tableIndex], condition[i].attribute, condition[i].attributeValue, condition[i].condition_type);
+        int attriNum = catalogmanager.getAttriNum(catalogmanager.Vtable[tableIndex], condition[i].attribute);
+        switch (catalogmanager.Vtable[tableIndex].attributes[attriNum].type) {
+            case INT:
+                 total += recordmanager.deleteRow(catalogmanager.Vtable[tableIndex], condition[i].attribute, toInt(condition[i].attributeValue), condition[i].condition_type);
+                break;
+            case FLOAT:
+                total += recordmanager.deleteRow(catalogmanager.Vtable[tableIndex], condition[i].attribute, toFloat(condition[i].attributeValue), condition[i].condition_type);
+                break;
+            case CHAR:
+                total += recordmanager.deleteRow(catalogmanager.Vtable[tableIndex], condition[i].attribute, condition[i].attributeValue, condition[i].condition_type);
+                break;
+        }
     }
     for(size_t i = 0; i <  condition.size(); ++i)
     {

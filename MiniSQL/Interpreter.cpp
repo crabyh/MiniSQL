@@ -722,6 +722,7 @@ bool Interpreter::parseCommand(string input)
                     {
                         currentCommand.objectName.push_back(objname);
                         currentCommand.objectType = TABLE;
+                        currentTable.name = currentCommand.objectName[0];
                     }
                     else
                     {
