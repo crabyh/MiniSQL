@@ -22,7 +22,7 @@ void Interpreter:: init()
 {
     static bool ini = false;
     if(ini==false)
-        cout<<"Wlecome to MiniSQL"<<endl<<"Sever version 0.0.1"<<endl<<endl<<"Copyright (c) 2014, 2014, Crab, Liliao, Starclam. All rights reserved."<<endl<<endl;
+        cout<<"Welcome to MiniSQL"<<endl<<"Sever version 0.0.1"<<endl<<endl<<"Copyright (c) 2014, 2014, Crab, Liliao, Starclam. All rights reserved."<<endl<<endl;
     ini=true;
     quitflag = false;
     currentPosition = 0;
@@ -967,7 +967,7 @@ bool Interpreter:: executeCommand()
             API.showResults(currentCommand.objectName[0], result);
             break;}
         case INSERT:
-            if(API.existTable(currentCommand.objectName[0].name)==false)//如果这张表不存在
+            if(API.existTable(currentCommand.objectName[0])==false)//如果这张表不存在
             {
                 outputHelp(TABLEERROR);
                 return false;
