@@ -1022,7 +1022,7 @@ void IndexManager::afterDelete(Attribute & attribute, string attributeValue, Tab
     }
     else
     {
-        btree = btreeMap[attribute.name];
+        btree = btreeMap[attribute.indexName];
     }
     btree->remove(attributeValue, recordPtr);
     traverse(btree->m_root, attribute.indexName + ".idx");
@@ -1042,7 +1042,7 @@ void IndexManager::afterDelete(Attribute & attribute, string attributeValue, Tab
     }
     else
     {
-        btree = btreeMap[attribute.name];
+        btree = btreeMap[attribute.indexName];
     }
     btree->deleteValue(attributeValue);
     traverse(btree->m_root, attribute.indexName + ".idx");

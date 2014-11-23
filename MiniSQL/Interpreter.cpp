@@ -982,6 +982,7 @@ bool Interpreter:: executeCommand()
                 outputHelp(INSERTTYPEERROR);
                 return false;
             }
+            //检查unique
             if(API.uniqueValue(currentCommand.objectName[0], insert) == false)
             {
                 outputHelp(UNIQUEVALUE);

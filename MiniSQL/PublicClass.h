@@ -16,7 +16,7 @@
 #include <sstream>
 #include <math.h>
 #include <stdio.h>
-#define MAXBUFFERNUM 20 //BUFFER中的块数
+#define MAXBUFFERNUM 1 //BUFFER中的块数
 #define BLOCKSIZE 4096//在MAIN.H中定义？
 #define INTSIZE 11
 #define FLOATSIZE 40
