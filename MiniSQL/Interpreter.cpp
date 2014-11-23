@@ -275,9 +275,58 @@ bool Interpreter:: parseCondition(vector<string> conditions)
             outputHelp(WHEREERROR);//不只拆分出三个子字符串
             return false;
         }
+        if(subConditions.size() == 2)
+        {
+            string s1 = subConditions[1].substr(0,2);
+            if(s1 == ">=" || s1 == "<=" || s1 == "<>")
+            {
+                string s2 = subConditions[1].substr(2,subConditions[1].size() - 2);
+                subConditions.pop_back();
+                subConditions.push_back(s1);
+                subConditions.push_back(s2);
+            }
+            else
+            {
+                s1 = subConditions[1].substr(0,1);
+                string s2 = subConditions[1].substr(1,subConditions[1].size() - 1);
+                subConditions.pop_back();
+                subConditions.push_back(s1);
+                subConditions.push_back(s2);
+            }
+        }
+        if (subConditions.size() == 1)
+        {
+            string s1;
+            string s2;
+            string s3;
+            for(size_t i = 0; i < subConditions[0].size(); ++i)
+            {
+                if(subConditions[0][i] == '>'||subConditions[0][i] == '<'||subConditions[0][i] == '=')
+                {
+                    if (subConditions[0][i+1] == '>'||subConditions[0][i+1] == '<'||subConditions[0][i+1] == '=') {
+                        s1 = subConditions[0].substr(0,i);
+                        s2 = subConditions[0].substr(i,2);
+                        s3 = subConditions[0].substr(i+2,subConditions[0].size() - i -2);
+                        subConditions.pop_back();
+                        subConditions.push_back(s1);
+                        subConditions.push_back(s2);
+                        subConditions.push_back(s3);
+                    }
+                    else
+                    {
+                        s1 = subConditions[0].substr(0,i);
+                        s2 = subConditions[0].substr(i,1);
+                        s3 = subConditions[0].substr(i+1,subConditions[0].size() - i -1);
+                        subConditions.pop_back();
+                        subConditions.push_back(s1);
+                        subConditions.push_back(s2);
+                        subConditions.push_back(s3);
+                    }
+                }
+            }
+        }
         Conditions tmpCondition;
         tmpCondition.attribute = subConditions[0];
-//        cout<<subConditions[0]<<endl;
         tmpCondition.condition_type = judgeConditionType(subConditions[1]);
         //去掉字符串两端的引号
         if(subConditions[2].size()>2)
