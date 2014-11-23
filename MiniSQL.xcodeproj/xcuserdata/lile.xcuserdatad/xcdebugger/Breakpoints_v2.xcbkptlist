@@ -94,9 +94,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "926"
-            endingLineNumber = "926"
-            landmarkName = "IndexManager::findEqualRecord(Attribute attribute, string attributeValue, Table &amp; table)"
-            landmarkType = "5">
+            endingLineNumber = "926">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
